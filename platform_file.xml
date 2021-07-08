@@ -1,0 +1,159 @@
+<!--
+					O host_0
+					/   |	 \
+				       /    |	  \			
+				      /     |     \
+				  host_1   host_2  host_3	
+					   /    \  
+					  /      \
+					 /        \
+				    host_4        host_5
+				    /    \
+				   /	  \
+	                         /        \
+				host_6     host_7
+				          /    \
+				         /      \
+				        /        \
+				      host_8     host_9
+	-->
+
+
+<?xml version ="1.0"?>
+<!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
+<platform version="4.1">
+	<zone id="zone_0" routing="Full">
+			<host id="host_0" speed ="1Gf,1Gf" core="1" speed_file="host_0_availability.trace" >
+				<prop id="wattage_per_state" value="100:200,100:200"/>
+      				<prop id="wattage_off" value="10" />
+      				<prop id ="RAM" value="1.5"/>
+      			</host>
+			<host id="host_1" speed="1Gf" core="1" speed_file="host_1_availability.trace" >
+				<prop id="wattage_per_state" value="100:200"/>
+      				<prop id="wattage_off" value="10" />
+      				<prop id ="RAM" value="1.5"/>
+      			</host>
+			<host id="host_2" speed="1Gf" core="1" speed_file="host_2_availability.trace" >
+				<prop id="wattage_per_state" value="100:200"/>
+      				<prop id="wattage_off" value="10" />
+      				<prop id ="RAM" value="1.5"/>
+      			</host>
+			<host id="host_3" speed ="1Gf" core="1" speed_file="host_3_availability.trace" >
+				<prop id="wattage_per_state" value="100:200"/>
+      				<prop id="wattage_off" value="10" />
+      				<prop id ="RAM" value="1.5"/>
+      			</host>
+			<host id="host_4" speed="1Gf" core="1" speed_file="host_4_availability.trace" >
+				<prop id="wattage_per_state" value="100:200"/>
+      				<prop id="wattage_off" value="10" />
+      				<prop id ="RAM" value="1.5"/>
+      			</host>
+			<host id="host_5" speed="1Gf" core="1" speed_file="host_5_availability.trace" >
+				<prop id="wattage_per_state" value="100:200"/>
+      				<prop id="wattage_off" value="10" />
+      				<prop id ="RAM" value="1.5"/>
+      			</host>
+			<host id="host_6" speed ="1Gf" core="1" speed_file="host_6_availability.trace" >
+				<prop id="wattage_per_state" value="100:200"/>
+      				<prop id="wattage_off" value="10" />
+      				<prop id ="RAM" value="1.5"/>
+      			</host>
+			<host id="host_7" speed="1Gf" core="1" speed_file="host_7_availability.trace" >
+				<prop id="wattage_per_state" value="100:200"/>
+      				<prop id="wattage_off" value="10" />
+      				<prop id ="RAM" value="1.5"/>
+      			</host>
+			<host id="host_8" speed="1Gf" core="1" speed_file="host_8_availability.trace" >
+				<prop id="wattage_per_state" value="100:200"/>
+      				<prop id="wattage_off" value="10" />
+      				<prop id ="RAM" value="1.5"/>
+      			</host>
+			<host id="host_9" speed="1Gf" core="1" speed_file="host_9_availability.trace" >
+				<prop id="wattage_per_state" value="100:200"/>
+      				<prop id="wattage_off" value="10" />
+      				<prop id ="RAM" value="1.5"/>
+      			</host>
+		
+		
+		
+		
+			<link id="link_0_1" bandwidth="1MBps" latency="100us">
+				<prop id="src" value="host_0"/>
+				<prop id="dst" value="host_1"/>
+			</link>
+			
+			<link id="link_0_2" bandwidth="1MBps" latency="100us">
+				<prop id="src" value="host_0"/>
+				<prop id="dst" value="host_2"/>
+			</link>
+			<link id="link_0_3" bandwidth="1MBps" latency="100us">
+				<prop id="src" value="host_0"/>
+				<prop id="dst" value="host_3"/>
+			</link>
+			<link id="link_2_4" bandwidth="1MBps" latency="100us">
+				<prop id="src" value="host_2"/>
+				<prop id="dst" value="host_4"/>
+			</link>
+			<link id="link_2_5" bandwidth="1MBps" latency="100us">
+				<prop id="src" value="host_2"/>
+				<prop id="dst" value="host_5"/>
+			</link>
+			
+			<link id="link_4_6" bandwidth="1MBps" latency="100us">
+				<prop id="src" value="host_4"/>
+				<prop id="dst" value="host_6"/>
+			</link>
+			
+			<link id="link_4_7" bandwidth="1MBps" latency="100us">
+				<prop id="src" value="host_4"/>
+				<prop id="dst" value="host_7"/>
+			</link>
+			<link id="link_7_8" bandwidth="1MBps" latency="100us">
+				<prop id="src" value="host_7"/>
+				<prop id="dst" value="host_8"/>
+			</link>
+			<link id="link_7_9" bandwidth="1MBps" latency="100us">
+				<prop id="src" value="host_7"/>
+				<prop id="dst" value="host_9"/>
+			</link>
+		
+			<route src="host_0" dst="host_1">
+				<link_ctn id="link_0_1" />
+			</route> 
+			<route src="host_0" dst="host_2">
+				<link_ctn id="link_0_2"/>
+			</route>
+			<route src="host_0" dst="host_3">
+				<link_ctn id="link_0_3" />
+			</route> 
+			
+			
+			
+			<route src="host_2" dst="host_4">
+				<link_ctn id="link_2_4"/>
+			</route>
+			<route src="host_2" dst="host_5">
+				<link_ctn id="link_2_5"/>
+			</route>
+		
+		
+		
+			<route src="host_4" dst="host_6">
+				<link_ctn id="link_4_6"/>
+			</route>			
+			<route src="host_4" dst="host_7">
+				<link_ctn id="link_4_7"/>
+			</route>
+				
+				
+				
+			<route src="host_7" dst="host_9">
+				<link_ctn id="link_7_9"/>
+			</route>			
+			<route src="host_7" dst="host_8">
+				<link_ctn id="link_7_8"/>
+			</route>
+
+	</zone>
+	
+</platform>
