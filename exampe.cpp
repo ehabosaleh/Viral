@@ -107,16 +107,17 @@ static void receive_outcome(sg4::Mailbox *mail_b,Result * result_packet,bool roo
 	XBT_INFO("Receiving from %s result",mail_b->get_cname());
 	result_packet->participants+="," +result->participants;
 	result_packet->result+=","+result->result;
-	*i+=1;
+	//if(result->completion==true)
+		*i+=1;
 	if(result->completion==false){result_packet->residue+=result->residue;}
 	if(root==false && *i==netzone[result_packet->source_name].size()){
 		sg4::Mailbox::by_name(result_packet->source_name)->put(result_packet, result_packet->size);
 		}
-//	if(result->completion==true &&result_packet->residue!=0){
-	//	result_packet->residue=0;
-	//	simgrid::s4u::Actor::create("new_source",sg4::Host::by_name(sg4::this_actor::get_host()->get_cname()),work_distributor,result->residue,false,result->source_name.data());
-
-	//	}
+	if(result->completion==true &&result_packet->residue>0){
+		//XBT_INFO("SOURCE IS %s\n destination is:%s",sg4::this_actor::get_host()->get_cname(),result_packet->source_name.data());
+		simgrid::s4u::Actor::create("new_source",sg4::Host::by_name(sg4::this_actor::get_host()->get_cname()),work_distributor,result_packet->residue,false,result->source_name.data());
+		result_packet->residue=0;
+		}
 	if(root==true && *i==netzone[result_packet->source_name].size()){
 		XBT_INFO("This is the source %s",result_packet->source_name.data());
 		XBT_INFO("Total participant hosts are:%s",result_packet->participants.data());
@@ -196,6 +197,7 @@ static void work_distributor(double work,bool root,string candinate_name){
 	int *i=new int();
 	std::string source_name=sg4::this_actor::get_host()->get_cname();
 	result_packet->source_name=source_name;
+	result_packet->residue=0;
 	simgrid::s4u::Host *source=simgrid::s4u::Host::by_name(source_name);
 	std::vector<double>computing_power;
 	std::vector<double>RAM_size;
@@ -222,11 +224,11 @@ static void work_distributor(double work,bool root,string candinate_name){
 		simgrid::s4u::Host *new_worker=simgrid::s4u::Host::by_name(host);
 		sg4::Actor::create("new_worker",sg4::Host::by_name(host), worker);
 		sg4::Mailbox::by_name(host)->put(new double(work_per_host), sizeof(work_per_host));
-		XBT_INFO("Send %f Mflops from %s to %s",work_per_host/1e6,source_name.data(),new_worker->get_cname());
+		XBT_INFO("Send %f Mflops from %s to %s",work_per_host/1e6,source_name.data(),new_worker->get_cname());}
 		for(auto mail_b:mail_box){
-			sg4::Actor::create("receiver",sg4::Host::by_name(mail_b->get_cname()), receive_outcome,mail_b,result_packet,root,i);
+			sg4::Actor::create("receiver",source, receive_outcome,mail_b,result_packet,root,i);/////////
 		}
-	}}
+	}
 	else{
 		sg4::Host *candinate=sg4::Host::by_name(candinate_name);
 		total_computing_power=0;
