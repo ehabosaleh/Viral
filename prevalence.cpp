@@ -34,6 +34,7 @@ struct Result{
 	uint64_t size;};
 
 std::map<std::string,std::vector<std::string>> netzone;
+std::vector<string> working_zone;
 std::map<std::string,std::map<std::string,std::vector<double>>> computing_tree;
 std::vector<string> sources;
 bool one_time_pad_work=true;
@@ -56,7 +57,6 @@ int main(int argc, char* argv[])
 		auto src=links[i]->get_property("src");
 		auto dst=links[i]->get_property("dst");
 		netzone[src].push_back(dst);
-
 		//auto dst1=links[i]->get_property("src"); // using the link for direct connection in both directions
 		//auto src1=links[i]->get_property("dst");
 		//netzone[src1].push_back(dst1);
@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
 	bool *inquiring=new bool;
 
 	*inquiring=true;
-	sg4::Host * host_0=sg4::Host::by_name("host_2");//define the source...
+	sg4::Host * host_0=sg4::Host::by_name("host_0");//define the source...
 	sg4::ActorPtr actor=sg4::Actor::create("actor_0",host_0, inquire,true,inquiring);
     e.run();
     XBT_INFO("End of simulation.");
@@ -230,14 +230,14 @@ static void work_distributor(double work,bool root,string candinate_name){
 	}
 	std::vector<simgrid::s4u::Mailbox * >mail_box={};
 	for(auto host:computing_tree[source_name]){			// 1)create new actors+ create new mail boxes named as new workers
-		if(computing_tree[source_name][host.first][0]>0){
+		//if(computing_tree[source_name][host.first][0]>0){
 			work_per_host=work_per_FLOP*computing_tree[source_name][host.first][0];
 			mail_box.push_back(simgrid::s4u::Mailbox::by_name(host.first));
 			simgrid::s4u::Host *new_worker=simgrid::s4u::Host::by_name(host.first);
 			sg4::Actor::create("new_worker",sg4::Host::by_name(host.first), worker);
 			sg4::Mailbox::by_name(host.first)->put(new double(work_per_host), sizeof(work_per_host));
 			XBT_INFO("Send %f Mflops from %s to %s",work_per_host/1e6,source_name.data(),new_worker->get_cname());
-		}
+		//}
 		}
 		for(auto mail_b:mail_box){
 			sg4::Actor::create("receiver",source, receive_outcome,mail_b,result_packet,root,i);/////////
@@ -288,7 +288,7 @@ if(root==true && *i==netzone[the_source->source_name].size()){
 	*inquiring=false;
 
 	if(one_time_pad_work==true){
-		sg4::Host * host_0=sg4::Host::by_name("host_2");
+		sg4::Host * host_0=sg4::Host::by_name("host_0");
 		double work_to_do=10E12;
 		sg4::Actor::create("actor_0",host_0, work_distributor,work_to_do,true,"");
 
