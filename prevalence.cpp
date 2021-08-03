@@ -38,7 +38,8 @@ std::vector<string> working_zone;
 std::map<std::string,std::map<std::string,std::vector<double>>> computing_tree;
 std::vector<string> sources;
 bool one_time_pad_work=true;
-
+double computing_threshold=0.5;
+double work_to_do=10E12;
 static void host_respond(bool *);
 static void inquire(bool,bool *);
 static void get_info(sg4::Mailbox * ,Source *,bool, int*,bool *);
@@ -74,17 +75,17 @@ int main(int argc, char* argv[])
 static void monitor(sg4::Host *host,bool *busy){
 		int counter=0;
 		while(true){
-			if (host->get_available_speed()<=0.4)
-				{counter++;}
-			else
-				{counter=0;}
-		sg4::this_actor::sleep_for(1);
-		if(counter>60){*busy=true;break;}
+
+			if (host->get_available_speed()<=computing_threshold) {counter++;}
+			else {counter=0;*busy=false;}
+			sg4::this_actor::sleep_for(60);
+
+			if(counter==5){*busy=true;counter=0;}// it will reach this point after 600 secs
 		}}
 
 static void wait_for_inquiry(bool *inquiring,Result *result_packet){
 	while(true){
-		sg4::this_actor::sleep_for(1);
+		sg4::this_actor::sleep_for(0.1);
 	if(*inquiring==false){
 		XBT_INFO("End of re-inquiring at source %s\n",result_packet->source_name.data());
 		break;
@@ -105,9 +106,11 @@ static void receive_outcome(sg4::Mailbox *mail_b,Result * result_packet,bool roo
 	result_packet->participants+="," +result->participants;
 	result_packet->result+=","+result->result;
 	result_packet->residue+=result->residue;
-	XBT_INFO("Residue at %s is %f\n",result_packet->source_name.data(),result_packet->residue);
+	XBT_INFO("Residue at %s is %f Mflops\n",result_packet->source_name.data(),result_packet->residue/10e6);
 	*i+=1;
-	if(root==false && *i==computing_tree[result_packet->source_name].size()&&result_packet->residue==0){
+
+
+	 if(root==false && *i==computing_tree[result_packet->source_name].size()&&result_packet->residue==0){
 		XBT_INFO("Work completed at node %s. send forth up\n",result_packet->source_name.data());
 		sg4::Mailbox::by_name(result_packet->source_name)->put(result_packet, result_packet->size);
 		}
@@ -138,18 +141,25 @@ static void local_worker(double work,Result* result_packet){
 	sg4::ActorPtr supervisor=sg4::Actor::create("monitor", sg4::this_actor::get_host(), monitor,sg4::this_actor::get_host(),busy);
 
 	while(true){
-	new_work=sg4::this_actor::get_host()->get_available_speed()*sg4::this_actor::get_host()->get_speed()*60;
+	new_work=sg4::this_actor::get_host()->get_available_speed()*sg4::this_actor::get_host()->get_speed()*0.5;
 	sg4::this_actor::execute(new_work);
 	work=work-new_work;
-	if(work<new_work){sg4::this_actor::execute(work);supervisor->kill(); result_packet->completion=true;break;}
-	if (*busy==true){
-		XBT_INFO("Host  %s was suspended at speed %f",sg4::this_actor::get_host()->get_cname(),sg4::this_actor::get_host()->get_available_speed());
-		supervisor->kill();
-		result_packet->completion=false;
-		result_packet->residue=work;
-		break;
-		}
-	}
+	if(work<new_work){sg4::this_actor::execute(work);
+	supervisor->kill();
+	result_packet->completion=true;break;}
+	else if (*busy==true){
+			XBT_INFO("Host  %s was suspended at speed %f",sg4::this_actor::get_host()->get_cname(),sg4::this_actor::get_host()->get_available_speed());
+			sg4::this_actor::sleep_for(300);
+			if (*busy==false){
+				XBT_INFO("Host %s can return to work now",sg4::this_actor::get_host()->get_cname());
+				continue;}
+			else{
+				XBT_INFO("Host %s is busy now and cannot do the work",sg4::this_actor::get_host()->get_cname());
+				supervisor->kill();
+				result_packet->completion=false;
+				result_packet->residue=work;
+				break;}}}
+
 
 	result_packet->execution_time=sg4::Engine::get_clock()-start;
 	XBT_INFO("Work is done in %s; Duration: %f Seconds",sg4::this_actor::get_host()->get_cname(),(sg4::Engine::get_clock()-start));
@@ -169,16 +179,23 @@ static void worker(){
 			//sg4::this_actor::execute(*work);//execution without monitoring the cpu power;
 			sg4::ActorPtr supervisor=sg4::Actor::create("monitor", sg4::this_actor::get_host(), monitor,sg4::this_actor::get_host(),busy);
 			while(true){
-			new_work=sg4::this_actor::get_host()->get_available_speed()*sg4::this_actor::get_host()->get_speed()*60;
+			new_work=sg4::this_actor::get_host()->get_available_speed()*sg4::this_actor::get_host()->get_speed()*0.5;
 			sg4::this_actor::execute(new_work);
 			*work=*work-new_work;
 			if(*work<new_work){sg4::this_actor::execute(*work);supervisor->kill();result_packet.completion=true;result_packet.residue=0;break;}
 			if (*busy==true){// the condition should monitor the cpu power for long time
 				XBT_INFO("Host %s was suspended at speed %f",sg4::this_actor::get_host()->get_cname(),sg4::this_actor::get_host()->get_available_speed());
+				sg4::this_actor::sleep_for(300);
+				if (*busy==false){
+					XBT_INFO("Host %s can return to work now",sg4::this_actor::get_host()->get_cname());
+					continue;}
+				else{
+				XBT_INFO("Host %s is busy now and cannot do the work",sg4::this_actor::get_host()->get_cname());
 				supervisor->kill();
 				result_packet.completion=false;
 				result_packet.residue=*work;
 				break;
+				}
 				}
 			}
 			result_packet.execution_time=sg4::Engine::get_clock()-start;
@@ -207,11 +224,9 @@ static void work_distributor(double work,bool root,string candinate_name){
 	//sg4::ActorPtr supervisor=sg4::Actor::create("monitor", sg4::this_actor::get_host(), monitor,sg4::this_actor::get_host(),busy);
 	double total_RAM_size=0;
 	double total_computing_power=0;
-	if(source->get_available_speed()>0.4){
+	if(source->get_available_speed()>computing_threshold){
 	 total_RAM_size=stod(source->get_property("RAM"));
 	 total_computing_power=source->get_available_speed();}
-
-	map<string,map<string,vector<double,double>>>::iterator it;
 
 	if(candinate_name.empty()==true){
 	for (auto host_name:computing_tree[source_name])
@@ -224,7 +239,7 @@ static void work_distributor(double work,bool root,string candinate_name){
 	double work_per_FLOP=work/total_computing_power;
 
 	double work_per_host=0.0;
-	if(source->get_available_speed()>0.4){
+	if(source->get_available_speed()>computing_threshold){
 
 	sg4::Actor::create("local_worker",source, local_worker,(work_per_FLOP*source->get_available_speed()),result_packet);
 	}
@@ -266,7 +281,7 @@ static void get_info(sg4::Mailbox * mail_b,Source* the_source,bool root, int *i,
 	XBT_INFO("Receiving responses from %s...",mail_b->get_cname());
 	XBT_INFO("Receiving from %s: %f of RAM memory",simgrid::s4u::this_actor::get_host()->get_cname(),host_specification->RAM);
 	XBT_INFO("Receiving from %s: %f of computing power\n",simgrid::s4u::this_actor::get_host()->get_cname(),host_specification->computing_power);
-	if(host_specification->computing_power>0.4){
+	if(host_specification->computing_power>computing_threshold){
 		the_source->RAM+=host_specification->RAM;
 		the_source->computing_power+=host_specification->computing_power;
 		the_source->infected+=host_specification->source_name+" , "+host_specification->infected;
@@ -289,7 +304,7 @@ if(root==true && *i==netzone[the_source->source_name].size()){
 
 	if(one_time_pad_work==true){
 		sg4::Host * host_0=sg4::Host::by_name("host_0");
-		double work_to_do=10E12;
+
 		sg4::Actor::create("actor_0",host_0, work_distributor,work_to_do,true,"");
 
 		one_time_pad_work=false;
@@ -307,7 +322,7 @@ static void inquire(bool root,bool *inquiring)
 	string host_name=simgrid::s4u::this_actor::get_host()->get_cname();
 	the_source->source_name=host_name;
 	simgrid::s4u::Host *host=simgrid::s4u::Host::by_name(host_name);
-	if(host->get_available_speed()>0.4){
+	if(host->get_available_speed()>computing_threshold){
 		the_source->RAM=stod(host->get_property("RAM"));
 		the_source->computing_power=host->get_available_speed();}
 
