@@ -1,9 +1,12 @@
 #include <simgrid/s4u.hpp>
 #include "simgrid/plugins/energy.h"
 #include<iostream>
+#include<fstream>
 #include<ctime>
 #include <stdio.h>
 #include <stdlib.h>
+#include <cmath>
+#define BUFFER_SIZE 50
 namespace sg4 = simgrid::s4u;
 using namespace std;
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor_migration, "Messages specific for this s4u example");
@@ -135,13 +138,33 @@ static void receive_outcome(sg4::Mailbox *mail_b,Result * result_packet,bool roo
 static void local_worker(double work,Result* result_packet){
 	bool * busy=new bool;
 	*busy=false;
+	string file_name=sg4::this_actor::get_host()->get_name()+"_availability.txt";
+
+
+	fstream myfile(file_name);
+	char newline[BUFFER_SIZE];
+    unsigned currentLine = 0 ;
 	double start=sg4::Engine::get_clock();
-	//sg4::this_actor::execute(*work);//execution without monitoring the cpu power;
+	string start_point=to_string(int(ceil(start)))+" "+to_string(0);
+	strcpy(newline,start_point.c_str());
+	//myfile.seekp(ceil(start));
+    while ( currentLine < floor(start) )
+    {
+
+         myfile.ignore( std::numeric_limits<std::streamsize>::max(), '\n') ;
+         ++currentLine ;
+    }
+
+    myfile.seekp(myfile.tellg()) ;
+	myfile<<newline;
+//	XBT_INFO("THE NEW LINE IS %s",newline);
+	//sg4::this_actor::execute(work);//execution without monitoring the cpu power;
+
 	double new_work;
 	sg4::ActorPtr supervisor=sg4::Actor::create("monitor", sg4::this_actor::get_host(), monitor,sg4::this_actor::get_host(),busy);
 
 	while(true){
-	new_work=sg4::this_actor::get_host()->get_available_speed()*sg4::this_actor::get_host()->get_speed()*0.5;
+	new_work=sg4::this_actor::get_host()->get_available_speed()*sg4::this_actor::get_host()->get_speed();
 	sg4::this_actor::execute(new_work);
 	work=work-new_work;
 	if(work<new_work){sg4::this_actor::execute(work);
@@ -179,7 +202,7 @@ static void worker(){
 			//sg4::this_actor::execute(*work);//execution without monitoring the cpu power;
 			sg4::ActorPtr supervisor=sg4::Actor::create("monitor", sg4::this_actor::get_host(), monitor,sg4::this_actor::get_host(),busy);
 			while(true){
-			new_work=sg4::this_actor::get_host()->get_available_speed()*sg4::this_actor::get_host()->get_speed()*0.5;
+			new_work=sg4::this_actor::get_host()->get_available_speed()*sg4::this_actor::get_host()->get_speed();
 			sg4::this_actor::execute(new_work);
 			*work=*work-new_work;
 			if(*work<new_work){sg4::this_actor::execute(*work);supervisor->kill();result_packet.completion=true;result_packet.residue=0;break;}
