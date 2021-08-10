@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cmath>
-#define BUFFER_SIZE 50
 namespace sg4 = simgrid::s4u;
 using namespace std;
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor_migration, "Messages specific for this s4u example");
@@ -65,8 +64,12 @@ int main(int argc, char* argv[])
 		//auto src1=links[i]->get_property("dst");
 		//netzone[src1].push_back(dst1);
 	}
-	bool *inquiring=new bool;
 
+
+
+
+
+	bool *inquiring=new bool;
 	*inquiring=true;
 	sg4::Host * host_0=sg4::Host::by_name("host_0");//define the source...
 	sg4::ActorPtr actor=sg4::Actor::create("actor_0",host_0, inquire,true,inquiring);
@@ -104,6 +107,7 @@ static void wait_for_inquiry(bool *inquiring,Result *result_packet){
 }
 
 static void receive_outcome(sg4::Mailbox *mail_b,Result * result_packet,bool root,int *i){
+
 	auto * result=static_cast<Result *>(mail_b->get());
 	XBT_INFO("Receiving from %s result",mail_b->get_cname());
 	result_packet->participants+="," +result->participants;
@@ -138,30 +142,31 @@ static void receive_outcome(sg4::Mailbox *mail_b,Result * result_packet,bool roo
 static void local_worker(double work,Result* result_packet){
 	bool * busy=new bool;
 	*busy=false;
-	string file_name=sg4::this_actor::get_host()->get_name()+"_availability.txt";
-
-
-	fstream myfile(file_name);
-	char newline[BUFFER_SIZE];
-    unsigned currentLine = 0 ;
 	double start=sg4::Engine::get_clock();
-	string start_point=to_string(int(ceil(start)))+" "+to_string(0);
-	strcpy(newline,start_point.c_str());
-	//myfile.seekp(ceil(start));
-    while ( currentLine < floor(start) )
-    {
 
-         myfile.ignore( std::numeric_limits<std::streamsize>::max(), '\n') ;
+	string original_file_name="availability/"+sg4::this_actor::get_host()->get_name()+"_availability.txt";
+	string temporary_file_name="availability/"+sg4::this_actor::get_host()->get_name()+"_availability_temp.txt";
+	ofstream original_file(original_file_name);// file to write
+	ifstream temporary_file(temporary_file_name);// file to read
+	string start_point=to_string(int(ceil(start)))+" "+to_string(0)+"\n";
+	int currentLine=1;
+	string strTemp_0,strTemp_1;
+    while (temporary_file >> strTemp_0>>strTemp_1 )
+    {
+    	if(currentLine==ceil(start))
+    	{original_file<<start_point;}
+    	else{
+
+    				original_file<<strTemp_0<<" "<<strTemp_1<<"\n";
+    	}
          ++currentLine ;
     }
+    temporary_file.close();
+    original_file.close();
 
-    myfile.seekp(myfile.tellg()) ;
-	myfile<<newline;
-//	XBT_INFO("THE NEW LINE IS %s",newline);
-	//sg4::this_actor::execute(work);//execution without monitoring the cpu power;
-
-	double new_work;
+	//sg4::this_actor::execute(work);//execution without monitoring the CPU power;
 	sg4::ActorPtr supervisor=sg4::Actor::create("monitor", sg4::this_actor::get_host(), monitor,sg4::this_actor::get_host(),busy);
+	double new_work;
 
 	while(true){
 	new_work=sg4::this_actor::get_host()->get_available_speed()*sg4::this_actor::get_host()->get_speed();
@@ -188,17 +193,56 @@ static void local_worker(double work,Result* result_packet){
 	XBT_INFO("Work is done in %s; Duration: %f Seconds",sg4::this_actor::get_host()->get_cname(),(sg4::Engine::get_clock()-start));
 	result_packet->result=sg4::this_actor::get_host()->get_name()+ " completed work in "+to_string(sg4::Engine::get_clock()-start)+" Sec\n";
 	result_packet->participants=sg4::this_actor::get_host()->get_cname();
+/*
+	string original_file_name_1="availability/"+sg4::this_actor::get_host()->get_name()+"_availability_temp.txt";
+	string temporary_file_name_1="availability/"+sg4::this_actor::get_host()->get_name()+"_availability.txt";
+	ifstream original_file_1(original_file_name_1);// file to write
+	ofstream temporary_file_1(temporary_file_name_1);// file to read
+	currentLine=1;
+	string strT_2,strT_3;
+	while (original_file_1 >> strT_2>>strT_3 )
+	    {
+		temporary_file_1<<strT_2<<" "<<strT_3<<"\n";
+	      ++currentLine ;
+	    }
+	    temporary_file_1.close();
+	    original_file_1.close();
+*/
 }
 
 static void worker(){
 		Result result_packet;
 		bool * busy=new bool;
 		*busy=false;
+
+
 		sg4::Mailbox *mail_b=sg4::Mailbox::by_name(sg4::this_actor::get_host()->get_cname());
 		auto *work=	static_cast<double *>(mail_b->get());
 		double new_work;
 		if(netzone[sg4::this_actor::get_host()->get_cname()].empty()==true){
 			double start=sg4::Engine::get_clock();
+
+			string original_file_name="availability/"+sg4::this_actor::get_host()->get_name()+"_availability.txt";
+			string temporary_file_name="availability/"+sg4::this_actor::get_host()->get_name()+"_availability_temp.txt";
+			ofstream original_file(original_file_name);// file to write
+			ifstream temporary_file(temporary_file_name);// file to read
+			string start_point=to_string(int(ceil(start)))+" "+to_string(0)+"\n";
+			int currentLine=1;
+			string strTemp_0,strTemp_1;
+		    while (temporary_file >> strTemp_0>>strTemp_1 )
+		    {
+		    	if(currentLine==ceil(start))
+		    	{original_file<<start_point;}
+		    	else{
+
+		    				original_file<<strTemp_0<<" "<<strTemp_1<<"\n";
+		    	}
+		         ++currentLine ;
+		    }
+		    temporary_file.close();
+		    original_file.close();
+
+
 			//sg4::this_actor::execute(*work);//execution without monitoring the cpu power;
 			sg4::ActorPtr supervisor=sg4::Actor::create("monitor", sg4::this_actor::get_host(), monitor,sg4::this_actor::get_host(),busy);
 			while(true){
@@ -221,13 +265,31 @@ static void worker(){
 				}
 				}
 			}
+
 			result_packet.execution_time=sg4::Engine::get_clock()-start;
 			XBT_INFO("Work is done in %s; Duration: %f Seconds",sg4::this_actor::get_host()->get_cname(),(sg4::Engine::get_clock()-start));
 			result_packet.result=sg4::this_actor::get_host()->get_name()+ " completed work in "+to_string(sg4::Engine::get_clock()-start)+" Sec\n";
 			result_packet.source_name=sg4::this_actor::get_host()->get_cname();
 			result_packet.participants=sg4::this_actor::get_host()->get_cname();
 			result_packet.size=1024;
+			XBT_INFO("send result from sub worker%s to super worker",sg4::this_actor::get_host()->get_cname());
 			sg4::Mailbox::by_name(sg4::this_actor::get_host()->get_cname())->put(new Result( result_packet), result_packet.size);
+/*
+				string original_file_name_1="availability/"+sg4::this_actor::get_host()->get_name()+"_availability_temp.txt";
+				string temporary_file_name_1="availability/"+sg4::this_actor::get_host()->get_name()+"_availability.txt";
+				ifstream original_file_1(original_file_name_1);// file to write
+				ofstream temporary_file_1(temporary_file_name_1);// file to read
+				currentLine=1;
+				string strT_2,strT_3;
+				while (original_file_1 >> strT_2>>strT_3 )
+				    {
+					temporary_file_1<<strT_2<<" "<<strT_3<<"\n";
+				      ++currentLine ;
+				    }
+				    temporary_file_1.close();
+				    original_file_1.close();
+*/
+
 		}
 		else{
 			simgrid::s4u::Actor::create("new_source",simgrid::s4u::Host::by_name(sg4::this_actor::get_host()->get_cname()),work_distributor,*work,false,"");
@@ -277,8 +339,32 @@ static void work_distributor(double work,bool root,string candinate_name){
 			XBT_INFO("Send %f Mflops from %s to %s",work_per_host/1e6,source_name.data(),new_worker->get_cname());
 		//}
 		}
-		for(auto mail_b:mail_box){
-			sg4::Actor::create("receiver",source, receive_outcome,mail_b,result_packet,root,i);/////////
+		if(mail_box.size()>0){
+			for(auto mail_b:mail_box){
+				sg4::Actor::create("receiver",source, receive_outcome,mail_b,result_packet,root,i);/////////
+								}}
+		else{
+			 if(result_packet->residue==0){
+				XBT_INFO("Work completed at node %s. send forth up\n",result_packet->source_name.data());
+				sg4::Mailbox::by_name(result_packet->source_name)->put(result_packet, result_packet->size);
+				}
+
+			 else if(result_packet->residue>0){
+					bool *inquiring=new bool;
+					*inquiring=true;
+					XBT_INFO("Work did not complete at %s. Let's redistribute the residue",result_packet->source_name.data());
+					sg4::ActorPtr actor=sg4::Actor::create("actor_0",sg4::Host::by_name(result_packet->source_name), inquire,true,inquiring);// true because we update part of the computing tree not all the computing tree
+					sg4::Actor::create("departed",sg4::Host::by_name(result_packet->source_name), wait_for_inquiry,inquiring, result_packet);
+					}
+
+
+				if(root==true && *i==computing_tree[result_packet->source_name].size()){
+					XBT_INFO("This is the source %s",result_packet->source_name.data());
+					XBT_INFO("Total participant hosts are:%s",result_packet->participants.data());
+					XBT_INFO("Result is :\n %s",result_packet->result.data());
+					XBT_INFO("Total Residue is:%f Mflops",result_packet->residue/1e6);
+				}
+
 		}
 	}
 	else{
