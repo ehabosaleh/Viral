@@ -22,7 +22,9 @@ struct Source{
   string infected ;
   double computing_power;
   double RAM;
+  double freemem;
   double residue;
+  double speed;
   uint64_t size;//in Bytes
 
 };
@@ -40,7 +42,7 @@ std::vector<string> working_zone;
 std::map<std::string,std::map<std::string,std::vector<double>>> computing_tree;
 std::vector<string> sources;
 bool one_time_pad_work=true;
-double computing_threshold=0.5;
+double computing_threshold=0.4;
 double work_to_do=10E12;
 static void host_respond(bool *);
 static void inquire(bool,bool *);
@@ -60,6 +62,9 @@ int main(int argc, char* argv[])
 		auto src=links[i]->get_property("src");
 		auto dst=links[i]->get_property("dst");
 		netzone[src].push_back(dst);
+
+
+
 		//auto dst1=links[i]->get_property("src"); // using the link for direct connection in both directions
 		//auto src1=links[i]->get_property("dst");
 		//netzone[src1].push_back(dst1);
@@ -80,13 +85,12 @@ int main(int argc, char* argv[])
 
 static void monitor(sg4::Host *host,bool *busy){
 		int counter=0;
+		double average_computing=0;
 		while(true){
-
 			if (host->get_available_speed()<=computing_threshold) {counter++;}
 			else {counter=0;*busy=false;}
 			sg4::this_actor::sleep_for(60);
-
-			if(counter==5){*busy=true;counter=0;}// it will reach this point after 600 secs
+			if(counter==10){*busy=true;counter=0;}// it will reach this point after 300 secs
 		}}
 
 static void wait_for_inquiry(bool *inquiring,Result *result_packet){
@@ -388,14 +392,25 @@ static void get_info(sg4::Mailbox * mail_b,Source* the_source,bool root, int *i,
 
 	auto *host_specification = static_cast<Source *>(mail_b->get());// get from put in respond() function
 	XBT_INFO("Receiving responses from %s...",mail_b->get_cname());
-	XBT_INFO("Receiving from %s: %f of RAM memory",simgrid::s4u::this_actor::get_host()->get_cname(),host_specification->RAM);
+	XBT_INFO("Receiving from %s: %f of free RAM memory",simgrid::s4u::this_actor::get_host()->get_cname(),host_specification->freemem);
 	XBT_INFO("Receiving from %s: %f of computing power\n",simgrid::s4u::this_actor::get_host()->get_cname(),host_specification->computing_power);
 	if(host_specification->computing_power>computing_threshold){
+	computing_tree[the_source->source_name][host_specification->source_name]={host_specification->computing_power,host_specification->freemem};
+
+		int counter=0;
+		for(map<string, map<string,vector<double >> >::iterator outer_iter=computing_tree.begin(); outer_iter!=computing_tree.end(); ++outer_iter)
+		for(map<string,vector<double>>::iterator inner_iter=outer_iter->second.begin(); inner_iter!=outer_iter->second.end(); ++inner_iter){
+			if(host_specification->source_name==inner_iter->first){counter++;}
+			if(counter==2){computing_tree[the_source->source_name].erase(host_specification->source_name);break;}
+			}
+
+
 		the_source->RAM+=host_specification->RAM;
+		the_source->freemem+=host_specification->freemem;
 		the_source->computing_power+=host_specification->computing_power;
+		the_source->speed+=host_specification->speed;
 		the_source->infected+=host_specification->source_name+" , "+host_specification->infected;
 		the_source->size+=host_specification->size;
-		computing_tree[the_source->source_name][host_specification->source_name]={host_specification->computing_power,host_specification->RAM};
 	}
 	else {computing_tree[the_source->source_name].erase(host_specification->source_name);}//////////
 
@@ -406,7 +421,7 @@ static void get_info(sg4::Mailbox * mail_b,Source* the_source,bool root, int *i,
 
 if(root==true && *i==netzone[the_source->source_name].size()){
 	XBT_INFO("This is the source %s",the_source->source_name.data());
-	XBT_INFO("RAM' total size is:  %f",the_source->RAM);
+	XBT_INFO("Total free random memory size is:  %f",the_source->RAM);
 	XBT_INFO("CPUs' total power is:  %f",the_source->computing_power);
 	XBT_INFO("Total infected hosts are:%s\n",the_source->infected.data());
 	*inquiring=false;
@@ -433,7 +448,10 @@ static void inquire(bool root,bool *inquiring)
 	simgrid::s4u::Host *host=simgrid::s4u::Host::by_name(host_name);
 	if(host->get_available_speed()>computing_threshold){
 		the_source->RAM=stod(host->get_property("RAM"));
-		the_source->computing_power=host->get_available_speed();}
+		the_source->freemem=stod(host->get_property("freemem_average"));
+		the_source->speed=host->get_speed();
+		the_source->computing_power=stod(host->get_property("idleness_average"));
+	}
 
 	sources.push_back(the_source->source_name);
 
@@ -443,7 +461,7 @@ static void inquire(bool root,bool *inquiring)
 	for(auto host:netzone[host_name]){					// 1)create new actors+ create new mail boxes named as new actors
 	mail_box.push_back(simgrid::s4u::Mailbox::by_name(host));
 	simgrid::s4u::Host *new_host=simgrid::s4u::Host::by_name(host);
-	simgrid::s4u::Actor::create("new_actor", new_host, host_respond,inquiring);
+	simgrid::s4u::Actor::create("respondent", new_host, host_respond,inquiring);
 }
 
 for(auto mail_b:mail_box){
@@ -462,6 +480,8 @@ for(auto mail_b:mail_box){ 				// 3)receive the response from leaf nodes
 
 static void host_respond(bool *inquiring)
 {
+	bool *busy=new bool;
+	*busy=false;
 	 auto *msg = static_cast<std::string*>(sg4::Mailbox::by_name(sg4::this_actor::get_host()->get_cname())->get());
 	 string request=msg->c_str();
 	 if(request=="send_info"){
@@ -471,7 +491,9 @@ static void host_respond(bool *inquiring)
 
 
 		 host.RAM=stod(sg4::this_actor::get_host()->get_property("RAM"));
-		 host.computing_power=sg4::this_actor::get_host()->get_available_speed();
+		 host.freemem=stod(sg4::this_actor::get_host()->get_property("freemem_average"));
+		 host.computing_power=stod(sg4::this_actor::get_host()->get_property("idleness_average"));
+		 host.speed=sg4::this_actor::get_host()->get_speed();
 		 host.source_name=sg4::this_actor::get_host()->get_cname();
 		 host.size=1024;
 		 sg4::Mailbox::by_name(sg4::this_actor::get_host()->get_cname())->put(new Source(host), host.size);//send from leaf node;
