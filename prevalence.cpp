@@ -8,14 +8,7 @@
 #include <cmath>
 namespace sg4 = simgrid::s4u;
 using namespace std;
-XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor_migration, "Messages specific for this s4u example");
-
-struct Host{
- std::string host_name;
-  double computing_power;
-  double RAM;
-  uint64_t size;//in Bytes
-};
+XBT_LOG_NEW_DEFAULT_CATEGORY(V_V_C, "");
 
 struct Source{
   std::string source_name;
@@ -28,6 +21,7 @@ struct Source{
   uint64_t size;//in Bytes
 
 };
+
 struct Result{
 	std::string source_name;
 	std::string participants;
@@ -42,7 +36,7 @@ std::vector<string> working_zone;
 std::map<std::string,std::map<std::string,std::vector<double>>> computing_tree;
 std::vector<string> sources;
 bool one_time_pad_work=true;
-double computing_threshold=0.4;
+double computing_threshold=0.5;
 double work_to_do=10E12;
 static void host_respond(bool *);
 static void inquire(bool,bool *);
@@ -63,17 +57,10 @@ int main(int argc, char* argv[])
 		auto dst=links[i]->get_property("dst");
 		netzone[src].push_back(dst);
 
-
-
 		//auto dst1=links[i]->get_property("src"); // using the link for direct connection in both directions
 		//auto src1=links[i]->get_property("dst");
 		//netzone[src1].push_back(dst1);
 	}
-
-
-
-
-
 	bool *inquiring=new bool;
 	*inquiring=true;
 	sg4::Host * host_0=sg4::Host::by_name("host_0");//define the source...
@@ -86,12 +73,18 @@ int main(int argc, char* argv[])
 static void monitor(sg4::Host *host,bool *busy){
 		int counter=0;
 		double average_computing=0;
+
 		while(true){
 			if (host->get_available_speed()<=computing_threshold) {counter++;}
 			else {counter=0;*busy=false;}
 			sg4::this_actor::sleep_for(60);
-			if(counter==10){*busy=true;counter=0;}// it will reach this point after 300 secs
-		}}
+			if(counter==5){*busy=true;counter=0;}// it will reach this point after 300 secs
+
+
+
+		}
+
+		}
 
 static void wait_for_inquiry(bool *inquiring,Result *result_packet){
 	while(true){
@@ -135,7 +128,7 @@ static void receive_outcome(sg4::Mailbox *mail_b,Result * result_packet,bool roo
 		}
 
 
-	if(root==true && *i==computing_tree[result_packet->source_name].size()){
+	else if(root==true && *i==computing_tree[result_packet->source_name].size()){
 		XBT_INFO("This is the source %s",result_packet->source_name.data());
 		XBT_INFO("Total participant hosts are:%s",result_packet->participants.data());
 		XBT_INFO("Result is :\n %s",result_packet->result.data());
@@ -160,18 +153,15 @@ static void local_worker(double work,Result* result_packet){
     	if(currentLine==ceil(start))
     	{original_file<<start_point;}
     	else{
-
     				original_file<<strTemp_0<<" "<<strTemp_1<<"\n";
     	}
          ++currentLine ;
     }
     temporary_file.close();
     original_file.close();
-
 	//sg4::this_actor::execute(work);//execution without monitoring the CPU power;
 	sg4::ActorPtr supervisor=sg4::Actor::create("monitor", sg4::this_actor::get_host(), monitor,sg4::this_actor::get_host(),busy);
 	double new_work;
-
 	while(true){
 	new_work=sg4::this_actor::get_host()->get_available_speed()*sg4::this_actor::get_host()->get_speed();
 	sg4::this_actor::execute(new_work);
@@ -313,9 +303,9 @@ static void work_distributor(double work,bool root,string candinate_name){
 	//sg4::ActorPtr supervisor=sg4::Actor::create("monitor", sg4::this_actor::get_host(), monitor,sg4::this_actor::get_host(),busy);
 	double total_RAM_size=0;
 	double total_computing_power=0;
-	if(source->get_available_speed()>computing_threshold){
+	if(stod(source->get_property("idleness_average"))>computing_threshold){
 	 total_RAM_size=stod(source->get_property("RAM"));
-	 total_computing_power=source->get_available_speed();}
+	 total_computing_power=stod(source->get_property("idleness_average"));}
 
 	if(candinate_name.empty()==true){
 	for (auto host_name:computing_tree[source_name])
@@ -328,9 +318,9 @@ static void work_distributor(double work,bool root,string candinate_name){
 	double work_per_FLOP=work/total_computing_power;
 
 	double work_per_host=0.0;
-	if(source->get_available_speed()>computing_threshold){
+	if(stod(source->get_property("idleness_average"))>computing_threshold){
 
-	sg4::Actor::create("local_worker",source, local_worker,(work_per_FLOP*source->get_available_speed()),result_packet);
+	sg4::Actor::create("local_worker",source, local_worker,(work_per_FLOP*stod(source->get_property("idleness_average"))),result_packet);
 	}
 	std::vector<simgrid::s4u::Mailbox * >mail_box={};
 	for(auto host:computing_tree[source_name]){			// 1)create new actors+ create new mail boxes named as new workers
@@ -394,24 +384,26 @@ static void get_info(sg4::Mailbox * mail_b,Source* the_source,bool root, int *i,
 	XBT_INFO("Receiving responses from %s...",mail_b->get_cname());
 	XBT_INFO("Receiving from %s: %f of free RAM memory",simgrid::s4u::this_actor::get_host()->get_cname(),host_specification->freemem);
 	XBT_INFO("Receiving from %s: %f of computing power\n",simgrid::s4u::this_actor::get_host()->get_cname(),host_specification->computing_power);
-	if(host_specification->computing_power>computing_threshold){
-	computing_tree[the_source->source_name][host_specification->source_name]={host_specification->computing_power,host_specification->freemem};
-
-		int counter=0;
-		for(map<string, map<string,vector<double >> >::iterator outer_iter=computing_tree.begin(); outer_iter!=computing_tree.end(); ++outer_iter)
-		for(map<string,vector<double>>::iterator inner_iter=outer_iter->second.begin(); inner_iter!=outer_iter->second.end(); ++inner_iter){
-			if(host_specification->source_name==inner_iter->first){counter++;}
-			if(counter==2){computing_tree[the_source->source_name].erase(host_specification->source_name);break;}
+	bool ignore=false;
+	if(host_specification->computing_power>computing_threshold)
+	   {
+			computing_tree[the_source->source_name][host_specification->source_name]={host_specification->computing_power,host_specification->freemem};
+			int counter=0;
+			for(map<string, map<string,vector<double >> >::iterator outer_iter=computing_tree.begin(); outer_iter!=computing_tree.end(); ++outer_iter)
+				for(map<string,vector<double>>::iterator inner_iter=outer_iter->second.begin(); inner_iter!=outer_iter->second.end(); ++inner_iter){
+					if(host_specification->source_name==inner_iter->first){counter++;}
+					if(counter==2){computing_tree[the_source->source_name].erase(host_specification->source_name);
+					ignore=true;
+					XBT_INFO("Cannot add %s to %s. It was added before ",host_specification->source_name.data(),the_source->source_name.data());
+					break;} }
+			if(ignore==false){
+			the_source->RAM+=host_specification->RAM;
+			the_source->freemem+=host_specification->freemem;
+			the_source->computing_power+=host_specification->computing_power;
+			the_source->speed+=host_specification->speed;
+			the_source->infected+=host_specification->source_name+" , "+host_specification->infected;
+			the_source->size+=host_specification->size;}
 			}
-
-
-		the_source->RAM+=host_specification->RAM;
-		the_source->freemem+=host_specification->freemem;
-		the_source->computing_power+=host_specification->computing_power;
-		the_source->speed+=host_specification->speed;
-		the_source->infected+=host_specification->source_name+" , "+host_specification->infected;
-		the_source->size+=host_specification->size;
-	}
 	else {computing_tree[the_source->source_name].erase(host_specification->source_name);}//////////
 
 	*i+=1;
@@ -446,7 +438,7 @@ static void inquire(bool root,bool *inquiring)
 	string host_name=simgrid::s4u::this_actor::get_host()->get_cname();
 	the_source->source_name=host_name;
 	simgrid::s4u::Host *host=simgrid::s4u::Host::by_name(host_name);
-	if(host->get_available_speed()>computing_threshold){
+	if(stod(host->get_property("idleness_average"))>computing_threshold){
 		the_source->RAM=stod(host->get_property("RAM"));
 		the_source->freemem=stod(host->get_property("freemem_average"));
 		the_source->speed=host->get_speed();
