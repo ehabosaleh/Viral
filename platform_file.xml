@@ -1,206 +1,1200 @@
-<!--
-					O host_0
-					/   |	 \  \
-				       /    |	  \  \______			
-				      /     |     \         \
-				  host_1   host_2  host_3    \	
- 					   /    \             \
-					  /      \             \
-					 /        \             \
-				    host_4        host_5        /
-				    /    \                     /
-				   /	  \                   /
-	                         /        \                 /
-				host_6     host_7           / 
-				          /    \           /
-				         /      \         /
-				        /        \       / 
-				      host_8     host_9
-				        \        /
-				         \      /
-				          \    /
-				          host_10
-	
-	
-	-->
 <?xml version ="1.0"?>
 <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4.1">
-	<zone id="zone_0" routing="Full">
-						<host id="host_0" speed ="1Gf" core="1" speed_file="availability/host_0_availability.txt" >
-				<prop id="wattage_per_state" value="100:200"/>
-      				<prop id="wattage_off" value="10" />
-      				<prop id ="RAM" value="4"/>
-      				<prop id="idleness_average" value="0.55"/>
-      				<prop id="freemem_average" value="0.5"/>
-      			</host>
-			<host id="host_1" speed="1Gf" core="1" speed_file="availability/host_1_availability.txt" >
-				<prop id="wattage_per_state" value="100:200"/>
-      				<prop id="wattage_off" value="10" />
-      				<prop id ="RAM" value="4"/>
-      				<prop id="idleness_average" value="0.55"/>
-      				<prop id="freemem_average" value="0.5"/>
-      			</host>
-			<host id="host_2" speed="1Gf" core="1" speed_file="availability/host_2_availability.txt" >
-				<prop id="wattage_per_state" value="100:200"/>
-      				<prop id="wattage_off" value="10" />
-      				<prop id ="RAM" value="4"/>
-      				<prop id="idleness_average" value="0.55"/>
-      				<prop id="freemem_average" value="0.5"/>
-      			</host>
-			<host id="host_3" speed ="1Gf" core="1" speed_file="availability/host_3_availability.txt" >
-				<prop id="wattage_per_state" value="100:200"/>
-      				<prop id="wattage_off" value="10" />
-      				<prop id ="RAM" value="4"/>
-      				<prop id="idleness_average" value="0.55"/>
-      				<prop id="freemem_average" value="0.5"/>
-      			</host>
-			<host id="host_4" speed="1Gf" core="1" speed_file="availability/host_4_availability.txt" >
-				<prop id="wattage_per_state" value="100:200"/>
-      				<prop id="wattage_off" value="10" />
-      				<prop id ="RAM" value="4"/>
-      				<prop id="idleness_average" value="0.55"/>
-      				<prop id="freemem_average" value="0.5"/>
-      			</host>
-			<host id="host_5" speed="1Gf" core="1" speed_file="availability/host_5_availability.txt" >
-				<prop id="wattage_per_state" value="100:200"/>
-      				<prop id="wattage_off" value="10" />
-      				<prop id ="RAM" value="4"/>
-      				<prop id="idleness_average" value="0.55"/>
-      				<prop id="freemem_average" value="0.5"/>
-      			</host>
-			<host id="host_6" speed ="1Gf" core="1" speed_file="availability/host_6_availability.txt" >
-				<prop id="wattage_per_state" value="100:200"/>
-      				<prop id="wattage_off" value="10" />
-      				<prop id ="RAM" value="4"/>
-      				<prop id="idleness_average" value="0.55"/>
-      				<prop id="freemem_average" value="0.5"/>
-      			</host>
-			<host id="host_7" speed="1Gf" core="1" speed_file="availability/host_7_availability.txt" >
-				<prop id="wattage_per_state" value="100:200"/>
-      				<prop id="wattage_off" value="10" />
-      				<prop id ="RAM" value="4"/>
-      				<prop id="idleness_average" value="0.55"/>
-      				<prop id="freemem_average" value="0.5"/>
-      			</host>
-			<host id="host_8" speed="1Gf" core="1" speed_file="availability/host_8_availability.txt" >
-				<prop id="wattage_per_state" value="100:200"/>
-      				<prop id="wattage_off" value="10" />
-      				<prop id ="RAM" value="4"/>
-      				<prop id="idleness_average" value="0.55"/>
-      				<prop id="freemem_average" value="0.5"/>
-      			</host>
-			<host id="host_9" speed="1Gf" core="1" speed_file="availability/host_9_availability.txt" >
-				<prop id="wattage_per_state" value="100:200"/>
-      				<prop id="wattage_off" value="10" />
-      				<prop id ="RAM" value="4"/>
-      				<prop id="idleness_average" value="0.55"/>
-      				<prop id="freemem_average" value="0.5"/>
-      			</host>
+	<zone id="main_zone" routing="Full">
+		<zone id="sub_zone_a" routing="Full">
+				<zone id="cluster_a_0" routing="Full">
+					<router id="router_0"/>
+					<host id="host_a_0_0" speed="1Gf" core="1" speed_file="host_a_0_0_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_0_1" speed="1Gf" core="1" speed_file="host_a_0_1_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_0_2" speed="1Gf" core="1" speed_file="host_a_0_2_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_0_3" speed="1Gf" core="1" speed_file="host_a_0_3_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_0_4" speed="1Gf" core="1" speed_file="host_a_0_4_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_0_5" speed="1Gf" core="1" speed_file="host_a_0_5_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_0_6" speed="1Gf" core="1" speed_file="host_a_0_6_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_0_7" speed="1Gf" core="1" speed_file="host_a_0_7_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_0_8" speed="1Gf" core="1" speed_file="host_a_0_8_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_0_9" speed="1Gf" core="1" speed_file="host_a_0_9_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_0_10" speed="1Gf" core="1" speed_file="host_a_0_10_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_0_11" speed="1Gf" core="1" speed_file="host_a_0_11_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_0_12" speed="1Gf" core="1" speed_file="host_a_0_12_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_0_13" speed="1Gf" core="1" speed_file="host_a_0_13_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_0_14" speed="1Gf" core="1" speed_file="host_a_0_14_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_0_15" speed="1Gf" core="1" speed_file="host_a_0_15_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_0_16" speed="1Gf" core="1" speed_file="host_a_0_16_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_0_17" speed="1Gf" core="1" speed_file="host_a_0_17_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_0_18" speed="1Gf" core="1" speed_file="host_a_0_18_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_0_19" speed="1Gf" core="1" speed_file="host_a_0_19_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_0_20" speed="1Gf" core="1" speed_file="host_a_0_20_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_0_21" speed="1Gf" core="1" speed_file="host_a_0_21_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_0_22" speed="1Gf" core="1" speed_file="host_a_0_22_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_0_23" speed="1Gf" core="1" speed_file="host_a_0_23_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_0_24" speed="1Gf" core="1" speed_file="host_a_0_24_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_0_25" speed="1Gf" core="1" speed_file="host_a_0_25_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      		</zone>
+	      			
+      			
+		      			<!--/////////////////////////// -->
+				<zone id="cluster_a_2" routing="Full">
+					<router id="router_2"/>
+					<host id="host_a_2_0" speed="1Gf" core="1" speed_file="host_a_2_0_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_2_1" speed="1Gf" core="1" speed_file="host_a_2_1_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_2_2" speed="1Gf" core="1" speed_file="host_a_2_2_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_2_3" speed="1Gf" core="1" speed_file="host_a_2_3_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_2_4" speed="1Gf" core="1" speed_file="host_a_2_4_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_2_5" speed="1Gf" core="1" speed_file="host_a_2_5_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_2_6" speed="1Gf" core="1" speed_file="host_a_2_6_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_2_7" speed="1Gf" core="1" speed_file="host_a_2_7_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_2_8" speed="1Gf" core="1" speed_file="host_a_2_8_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_2_9" speed="1Gf" core="1" speed_file="host_a_2_9_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_2_10" speed="1Gf" core="1" speed_file="host_a_2_10_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_2_11" speed="1Gf" core="1" speed_file="host_a_2_11_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_2_12" speed="1Gf" core="1" speed_file="host_a_2_12_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_2_13" speed="1Gf" core="1" speed_file="host_a_2_13_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_2_14" speed="1Gf" core="1" speed_file="host_a_2_14_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_2_15" speed="1Gf" core="1" speed_file="host_a_2_15_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_2_16" speed="1Gf" core="1" speed_file="host_a_2_16_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_2_17" speed="1Gf" core="1" speed_file="host_a_2_17_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_2_18" speed="1Gf" core="1" speed_file="host_a_2_18_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_2_19" speed="1Gf" core="1" speed_file="host_a_2_19_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_2_20" speed="1Gf" core="1" speed_file="host_a_2_20_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_2_21" speed="1Gf" core="1" speed_file="host_a_2_21_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_2_22" speed="1Gf" core="1" speed_file="host_a_2_22_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_2_23" speed="1Gf" core="1" speed_file="host_a_2_23_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_2_24" speed="1Gf" core="1" speed_file="host_a_2_24_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_2_25" speed="1Gf" core="1" speed_file="host_a_2_25_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      		</zone>
+		      			
+		 	      <!--/////////////////////////// -->
+				<zone id="cluster_a_1" routing="Full">
+					<router id="router_1"/>
+					<host id="host_a_1_0" speed="1Gf" core="1" speed_file="host_a_1_0_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_1_1" speed="1Gf" core="1" speed_file="host_a_1_1_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_1_2" speed="1Gf" core="1" speed_file="host_a_1_2_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_1_3" speed="1Gf" core="1" speed_file="host_a_1_3_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_1_4" speed="1Gf" core="1" speed_file="host_a_1_4_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_1_5" speed="1Gf" core="1" speed_file="host_a_1_5_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_1_6" speed="1Gf" core="1" speed_file="host_a_1_6_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_1_7" speed="1Gf" core="1" speed_file="host_a_1_7_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_1_8" speed="1Gf" core="1" speed_file="host_a_1_8_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_1_9" speed="1Gf" core="1" speed_file="host_a_1_9_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_1_10" speed="1Gf" core="1" speed_file="host_a_1_10_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_1_11" speed="1Gf" core="1" speed_file="host_a_1_11_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_1_12" speed="1Gf" core="1" speed_file="host_a_1_12_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_1_13" speed="1Gf" core="1" speed_file="host_a_1_13_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_1_14" speed="1Gf" core="1" speed_file="host_a_1_14_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_1_15" speed="1Gf" core="1" speed_file="host_a_1_15_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_1_16" speed="1Gf" core="1" speed_file="host_a_1_16_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_1_17" speed="1Gf" core="1" speed_file="host_a_1_17_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_1_18" speed="1Gf" core="1" speed_file="host_a_1_18_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_1_19" speed="1Gf" core="1" speed_file="host_a_1_19_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_1_20" speed="1Gf" core="1" speed_file="host_a_1_20_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_1_21" speed="1Gf" core="1" speed_file="host_a_1_21_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_1_22" speed="1Gf" core="1" speed_file="host_a_1_22_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_1_23" speed="1Gf" core="1" speed_file="host_a_1_23_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_1_24" speed="1Gf" core="1" speed_file="host_a_1_24_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_1_25" speed="1Gf" core="1" speed_file="host_a_1_25_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      		</zone>	
+				<!--/////////////////////////// -->
+				<zone id="cluster_a_3" routing="Full">
+					<router id="router_3"/>
+					<host id="host_a_3_0" speed="1Gf" core="1" speed_file="host_a_3_0_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_3_1" speed="1Gf" core="1" speed_file="host_a_3_1_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_3_2" speed="1Gf" core="1" speed_file="host_a_3_2_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_3_3" speed="1Gf" core="1" speed_file="host_a_3_3_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_3_4" speed="1Gf" core="1" speed_file="host_a_3_4_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_3_5" speed="1Gf" core="1" speed_file="host_a_3_5_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_3_6" speed="1Gf" core="1" speed_file="host_a_3_6_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_3_7" speed="1Gf" core="1" speed_file="host_a_3_7_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_3_8" speed="1Gf" core="1" speed_file="host_a_3_8_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_3_9" speed="1Gf" core="1" speed_file="host_a_3_9_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_3_10" speed="1Gf" core="1" speed_file="host_a_3_10_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_3_11" speed="1Gf" core="1" speed_file="host_a_3_11_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_3_12" speed="1Gf" core="1" speed_file="host_a_3_12_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_3_13" speed="1Gf" core="1" speed_file="host_a_3_13_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_3_14" speed="1Gf" core="1" speed_file="host_a_3_14_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_3_15" speed="1Gf" core="1" speed_file="host_a_3_15_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_3_16" speed="1Gf" core="1" speed_file="host_a_3_16_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_3_17" speed="1Gf" core="1" speed_file="host_a_3_17_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_3_18" speed="1Gf" core="1" speed_file="host_a_3_18_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_3_19" speed="1Gf" core="1" speed_file="host_a_3_19_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_3_20" speed="1Gf" core="1" speed_file="host_a_3_20_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_3_21" speed="1Gf" core="1" speed_file="host_a_3_21_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_3_22" speed="1Gf" core="1" speed_file="host_a_3_22_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_3_23" speed="1Gf" core="1" speed_file="host_a_3_23_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_3_24" speed="1Gf" core="1" speed_file="host_a_3_24_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_3_25" speed="1Gf" core="1" speed_file="host_a_3_25_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      		</zone>
+		      		
+		      		<!--/////////////////////////// -->
+				<zone id="cluster_a_4" routing="Full">
+					<router id="router_4"/>
+					<host id="host_a_4_0" speed="1Gf" core="1" speed_file="host_a_4_0_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_4_1" speed="1Gf" core="1" speed_file="host_a_4_1_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_4_2" speed="1Gf" core="1" speed_file="host_a_4_2_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_4_3" speed="1Gf" core="1" speed_file="host_a_4_3_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_4_4" speed="1Gf" core="1" speed_file="host_a_4_4_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_4_5" speed="1Gf" core="1" speed_file="host_a_4_5_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_4_6" speed="1Gf" core="1" speed_file="host_a_4_6_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_4_7" speed="1Gf" core="1" speed_file="host_a_4_7_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_4_8" speed="1Gf" core="1" speed_file="host_a_4_8_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_4_9" speed="1Gf" core="1" speed_file="host_a_4_9_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_4_10" speed="1Gf" core="1" speed_file="host_a_4_10_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_4_11" speed="1Gf" core="1" speed_file="host_a_4_11_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_4_12" speed="1Gf" core="1" speed_file="host_a_4_12_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_4_13" speed="1Gf" core="1" speed_file="host_a_4_13_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_4_14" speed="1Gf" core="1" speed_file="host_a_4_14_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_4_15" speed="1Gf" core="1" speed_file="host_a_4_15_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_4_16" speed="1Gf" core="1" speed_file="host_a_4_16_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_4_17" speed="1Gf" core="1" speed_file="host_a_4_17_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_4_18" speed="1Gf" core="1" speed_file="host_a_4_18_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_4_19" speed="1Gf" core="1" speed_file="host_a_4_19_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_4_20" speed="1Gf" core="1" speed_file="host_a_4_20_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_4_21" speed="1Gf" core="1" speed_file="host_a_4_21_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_4_22" speed="1Gf" core="1" speed_file="host_a_4_22_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_4_23" speed="1Gf" core="1" speed_file="host_a_4_23_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_4_24" speed="1Gf" core="1" speed_file="host_a_4_24_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_4_25" speed="1Gf" core="1" speed_file="host_a_4_25_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      		</zone>
+		      		<!--/////////////////////////// -->
+				<zone id="cluster_a_5" routing="Full">
+					<router id="router_5"/>
+					<host id="host_a_5_0" speed="1Gf" core="1" speed_file="host_a_5_0_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_5_1" speed="1Gf" core="1" speed_file="host_a_5_1_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_5_2" speed="1Gf" core="1" speed_file="host_a_5_2_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_5_3" speed="1Gf" core="1" speed_file="host_a_5_3_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_5_4" speed="1Gf" core="1" speed_file="host_a_5_4_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_5_5" speed="1Gf" core="1" speed_file="host_a_5_5_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_5_6" speed="1Gf" core="1" speed_file="host_a_5_6_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_5_7" speed="1Gf" core="1" speed_file="host_a_5_7_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_5_8" speed="1Gf" core="1" speed_file="host_a_5_8_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_5_9" speed="1Gf" core="1" speed_file="host_a_5_9_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_5_10" speed="1Gf" core="1" speed_file="host_a_5_10_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_5_11" speed="1Gf" core="1" speed_file="host_a_5_11_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_5_12" speed="1Gf" core="1" speed_file="host_a_5_12_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_5_13" speed="1Gf" core="1" speed_file="host_a_5_13_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_5_14" speed="1Gf" core="1" speed_file="host_a_5_14_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_5_15" speed="1Gf" core="1" speed_file="host_a_5_15_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_5_16" speed="1Gf" core="1" speed_file="host_a_5_16_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_5_17" speed="1Gf" core="1" speed_file="host_a_5_17_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_5_18" speed="1Gf" core="1" speed_file="host_a_5_18_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_5_19" speed="1Gf" core="1" speed_file="host_a_5_19_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_5_20" speed="1Gf" core="1" speed_file="host_a_5_20_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_5_21" speed="1Gf" core="1" speed_file="host_a_5_21_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_5_22" speed="1Gf" core="1" speed_file="host_a_5_22_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_5_23" speed="1Gf" core="1" speed_file="host_a_5_23_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_5_24" speed="1Gf" core="1" speed_file="host_a_5_24_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      			<host id="host_a_5_25" speed="1Gf" core="1" speed_file="host_a_5_25_availability.txt" >
+						<prop id="wattage_per_state" value="100:200"/>
+		      				<prop id="wattage_off" value="10" />
+		      				<prop id ="RAM" value="4"/>
+		      				<prop id="idleness_average" value="0.55"/>
+		      				<prop id="freemem_average" value="0.5"/>
+		      			</host>
+		      		</zone>
+		      		
+				      <link id="link_a_0" bandwidth="1Gbps" latency="100us">
+				      		<prop id="src" value="host_a_0_0"/>
+						<prop id="dst" value="host_a_1_0"/>
+					</link>
+				      <link id="link_a_1" bandwidth="1Gbps" latency="100us">
+				 		<prop id="src" value="host_a_1_0"/>
+						<prop id="dst" value="host_a_2_0"/>
+					</link>
+				      <link id="link_a_2" bandwidth="1Gbps" latency="100us">
+				      		<prop id="src" value="host_a_2_0"/>
+						<prop id="dst" value="host_a_3_0"/>
+					</link>
+				      <link id="link_a_3" bandwidth="1Gbps" latency="100us">
+				    		<prop id="src" value="host_a_3_0"/>
+						<prop id="dst" value="host_a_4_0"/>
+					</link>
+				      <link id="link_a_4" bandwidth="1Gbps" latency="100us">
+				      		<prop id="src" value="host_a_4_0"/>
+						<prop id="dst" value="host_a_5_0"/>
+					</link>
+				      
+				      
+				      <zoneRoute src="cluster_a_0" dst="cluster_a_1" gw_src="router_0" gw_dst="router_1">
+				      		<link_ctn id="link_a_0"/>
+				      </zoneRoute>
+				      <zoneRoute src="cluster_a_1" dst="cluster_a_2" gw_src="router_1" gw_dst="router_2">
+				      		<link_ctn id="link_a_1"/>
+				      </zoneRoute>
+				      <zoneRoute src="cluster_a_2" dst="cluster_a_3" gw_src="router_2" gw_dst="router_3">
+				      		<link_ctn id="link_a_2"/>
+				      </zoneRoute>
+				      <zoneRoute src="cluster_a_3" dst="cluster_a_4" gw_src="router_3" gw_dst="router_4">
+				      		<link_ctn id="link_a_3"/>
+				      </zoneRoute>
+		      		      <zoneRoute src="cluster_a_4" dst="cluster_a_5" gw_src="router_4" gw_dst="router_5">
+				      		<link_ctn id="link_a_4"/>
+				      </zoneRoute>
+				      
+		      			
+		</zone>			
+<!--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+<!--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+<!--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
 		
-			<host id="host_10" speed="1Gf" core="1" speed_file="availability/host_10_availability.txt" >
-				<prop id="wattage_per_state" value="100:200"/>
-      				<prop id="wattage_off" value="10" />
-      				<prop id ="RAM" value="4"/>
-      				<prop id="idleness_average" value="0.55"/>
-      				<prop id="freemem_average" value="0.5"/>
-      			</host>
+		</zone>
 		
 		
-			<link id="link_0_1" bandwidth="1MBps" latency="100us">
-				<prop id="src" value="host_0"/>
-				<prop id="dst" value="host_1"/>
+			<link id="sub_zone_a_b" bandwidth="100MBps" latency="100ns">
+				<prop id="src" value="host_a_0_0"/>
+				<prop id="dst" value="host_b_0_0"/>
 			</link>
-			
-			<link id="link_0_2" bandwidth="1MBps" latency="100us">
-				<prop id="src" value="host_0"/>
-				<prop id="dst" value="host_2"/>
+			<link id="sub_zone_b_c" bandwidth="100MBps" latency="100ns">
+				<prop id="src" value="host_b_0_0"/>
+				<prop id="dst" value="host_c_0_0"/>
 			</link>
-			<link id="link_0_3" bandwidth="1MBps" latency="100us">
-				<prop id="src" value="host_0"/>
-				<prop id="dst" value="host_3"/>
+			<link id="sub_zone_c_d" bandwidth="100MBps" latency="100ns">
+				<prop id="src" value="host_c_0_0"/>
+				<prop id="dst" value="host_d_0_0"/>
 			</link>
-			<link id="link_2_4" bandwidth="1MBps" latency="100us">
-				<prop id="src" value="host_2"/>
-				<prop id="dst" value="host_4"/>
-			</link>
-			<link id="link_2_5" bandwidth="1MBps" latency="100us">
-				<prop id="src" value="host_2"/>
-				<prop id="dst" value="host_5"/>
-			</link>
-			
-			<link id="link_4_6" bandwidth="1MBps" latency="100us">
-				<prop id="src" value="host_4"/>
-				<prop id="dst" value="host_6"/>
-			</link>
-			
-			<link id="link_4_7" bandwidth="1MBps" latency="100us">
-				<prop id="src" value="host_4"/>
-				<prop id="dst" value="host_7"/>
-			</link>
-			<link id="link_7_8" bandwidth="1MBps" latency="100us">
-				<prop id="src" value="host_7"/>
-				<prop id="dst" value="host_8"/>
-			</link>
-			<link id="link_7_9" bandwidth="1MBps" latency="100us">
-				<prop id="src" value="host_7"/>
-				<prop id="dst" value="host_9"/>
-			</link>
-			
-			
-			<link id="link_8_10" bandwidth="1MBps" latency="100us">
-				<prop id="src" value="host_8"/>
-				<prop id="dst" value="host_10"/>
-			</link>
-			<link id="link_9_10" bandwidth="1MBps" latency="100us">
-				<prop id="src" value="host_9"/>
-				<prop id="dst" value="host_10"/>
-			</link>
-		
-		
-			<route src="host_0" dst="host_1">
-				<link_ctn id="link_0_1" />
-			</route> 
-			<route src="host_0" dst="host_2">
-				<link_ctn id="link_0_2"/>
-			</route>
-			<route src="host_0" dst="host_3">
-				<link_ctn id="link_0_3" />
-			</route> 
-			
-			
-			
-			<route src="host_2" dst="host_4">
-				<link_ctn id="link_2_4"/>
-			</route>
-			<route src="host_2" dst="host_5">
-				<link_ctn id="link_2_5"/>
-			</route>
-		
-		
-		
-			<route src="host_4" dst="host_6">
-				<link_ctn id="link_4_6"/>
-			</route>			
-			<route src="host_4" dst="host_7">
-				<link_ctn id="link_4_7"/>
-			</route>
 				
-				
-				
-			<route src="host_7" dst="host_9">
-				<link_ctn id="link_7_9"/>
-			</route>			
-			<route src="host_7" dst="host_8">
-				<link_ctn id="link_7_8"/>
-			</route>
-			<route src="host_8" dst="host_10">
-				<link_ctn id="link_8_10"/>
-			</route>
-			<route src="host_9" dst="host_10">
-				<link_ctn id="link_9_10"/>
-			</route>
+					
+			<zoneRoute src="sub_zone_a" dst="sub_zone_b" gw_src="router_1" gw_dst="router_6">
+					<link_ctn id="sub_zone_a_b"/>
+			</zoneRoute>
 			
-	</zone>
+			<zoneRoute src="sub_zone_b" dst="sub_zone_c" gw_src="router_6" gw_dst="router_12">
+					<link_ctn id="sub_zone_b_c"/>
+			</zoneRoute>
+			<zoneRoute src="sub_zone_c" dst="sub_zone_d" gw_src="router_12" gw_dst="router_18">
+					<link_ctn id="sub_zone_c_d"/>
+			</zoneRoute>
+</zone>
+	
 	
 </platform>
