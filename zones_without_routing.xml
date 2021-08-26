@@ -1,0 +1,141 @@
+<?xml version ="1.0"?>
+<!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
+<platform version="4.1">
+	<zone id="main_zone" routing="Cluster">
+		<zone id="zone_0" routing="Cluster">
+			<router id="router_0"/>
+			<host id="host_0" speed ="1Gf" core="1" speed_file="availability/host_0_availability.txt" >
+				<prop id="wattage_per_state" value="100:200"/>
+      				<prop id="wattage_off" value="10" />
+      				<prop id ="RAM" value="4"/>
+      				<prop id="idleness_average" value="0.55"/>
+      				<prop id="freemem_average" value="0.5"/>
+      			</host>
+      			<link id="l_0" bandwidth="125MBps" latency="100us"/>
+			<host_link id="host_0" up="l_0" down="l_0"/>
+      		</zone>
+      		<zone id="zone_1" routing="Cluster">
+			<router id="router_1"/>
+			<host id="host_1" speed="1Gf" core="1" speed_file="availability/host_1_availability.txt" >
+				<prop id="wattage_per_state" value="100:200"/>
+      				<prop id="wattage_off" value="10" />
+      				<prop id ="RAM" value="4"/>
+      				<prop id="idleness_average" value="0.55"/>
+      				<prop id="freemem_average" value="0.5"/>
+      			</host>
+      			<link id="l_1" bandwidth="125MBps" latency="100us"/>
+			<host_link id="host_1" up="l_1" down="l_1"/>
+      		</zone>
+      		<zone id="zone_2" routing="Cluster">
+			<router id="router_2"/>
+			<host id="host_2" speed="1Gf" core="1" speed_file="availability/host_2_availability.txt" >
+				<prop id="wattage_per_state" value="100:200"/>
+      				<prop id="wattage_off" value="10" />
+      				<prop id ="RAM" value="4"/>
+      				<prop id="idleness_average" value="0.55"/>
+      				<prop id="freemem_average" value="0.5"/>
+      			</host>
+      			<link id="l_2" bandwidth="125MBps" latency="100us"/>
+			<host_link id="host_2" up="l_2" down="l_2"/>
+      		</zone>
+      		<zone id="zone_3" routing="Cluster">
+			<router id="router_3"/>
+			<host id="host_3" speed ="1Gf" core="1" speed_file="availability/host_3_availability.txt" >
+				<prop id="wattage_per_state" value="100:200"/>
+      				<prop id="wattage_off" value="10" />
+      				<prop id ="RAM" value="4"/>
+      				<prop id="idleness_average" value="0.55"/>
+      				<prop id="freemem_average" value="0.5"/>
+      			</host>
+      			<link id="l_3" bandwidth="125MBps" latency="100us"/>
+			<host_link id="host_3" up="l_3" down="l_3"/>
+      		</zone>
+      		<zone id="zone_4" routing="Cluster">
+			<router id="router_4"/>
+			<host id="host_4" speed="1Gf" core="1" speed_file="availability/host_4_availability.txt" >
+				<prop id="wattage_per_state" value="100:200"/>
+      				<prop id="wattage_off" value="10" />
+      				<prop id ="RAM" value="4"/>
+      				<prop id="idleness_average" value="0.55"/>
+      				<prop id="freemem_average" value="0.5"/>
+      			</host>
+      			<link id="l_4" bandwidth="125MBps" latency="100us"/>
+			<host_link id="host_4" up="l_4" down="l_4"/>
+      		</zone>
+      		<zone id="zone_5" routing="Cluster">
+			<router id="router_5"/>
+			<host id="host_5" speed="1Gf" core="1" speed_file="availability/host_5_availability.txt" >
+				<prop id="wattage_per_state" value="100:200"/>
+      				<prop id="wattage_off" value="10" />
+      				<prop id ="RAM" value="4"/>
+      				<prop id="idleness_average" value="0.55"/>
+      				<prop id="freemem_average" value="0.5"/>
+      			</host>
+      			<link id="l_5" bandwidth="125MBps" latency="100us"/>
+			<host_link id="host_5" up="l_5" down="l_5"/>
+      		</zone>
+      		<zone id="zone_6" routing="Cluster">
+			<router id="router_6"/>
+			<host id="host_6" speed ="1Gf" core="1" speed_file="availability/host_6_availability.txt" >
+				<prop id="wattage_per_state" value="100:200"/>
+      				<prop id="wattage_off" value="10" />
+      				<prop id ="RAM" value="4"/>
+      				<prop id="idleness_average" value="0.55"/>
+      				<prop id="freemem_average" value="0.5"/>
+      			</host>
+      			<link id="l_6" bandwidth="125MBps" latency="100us"/>
+			<host_link id="host_6" up="l_6" down="l_6"/>
+      		</zone>
+      		<zone id="zone_7" routing="Cluster">
+			<router id="router_7"/>
+			<host id="host_7" speed="1Gf" core="1" speed_file="availability/host_7_availability.txt" >
+				<prop id="wattage_per_state" value="100:200"/>
+      				<prop id="wattage_off" value="10" />
+      				<prop id ="RAM" value="4"/>
+      				<prop id="idleness_average" value="0.55"/>
+      				<prop id="freemem_average" value="0.5"/>
+      			</host>
+      			<link id="l_7" bandwidth="125MBps" latency="100us"/>
+			<host_link id="host_7" up="l_7" down="l_7"/>
+      		</zone>
+      		<zone id="zone_8" routing="Cluster">
+			<router id="router_8"/>
+			<host id="host_8" speed="1Gf" core="1" speed_file="availability/host_8_availability.txt" >
+				<prop id="wattage_per_state" value="100:200"/>
+      				<prop id="wattage_off" value="10" />
+      				<prop id ="RAM" value="4"/>
+      				<prop id="idleness_average" value="0.55"/>
+      				<prop id="freemem_average" value="0.5"/>
+      			</host>
+      			<link id="l_8" bandwidth="125MBps" latency="100us"/>
+			<host_link id="host_8" up="l_8" down="l_8"/>
+      		</zone>
+      		<zone id="zone_9" routing="Cluster">
+			<router id="router_9"/>
+			<host id="host_9" speed="1Gf" core="1" speed_file="availability/host_9_availability.txt" >
+				<prop id="wattage_per_state" value="100:200"/>
+      				<prop id="wattage_off" value="10" />
+      				<prop id ="RAM" value="4"/>
+      				<prop id="idleness_average" value="0.55"/>
+      				<prop id="freemem_average" value="0.5"/>
+      			</host>
+      			<link id="l_9" bandwidth="125MBps" latency="100us"/>
+			<host_link id="host_9" up="l_9" down="l_9"/>
+		</zone>
+		<zone id="zone_10" routing="Cluster">
+			<router id="router_10"/>
+			<host id="host_10" speed="1Gf" core="1" speed_file="availability/host_10_availability.txt" >
+				<prop id="wattage_per_state" value="100:200"/>
+      				<prop id="wattage_off" value="10" />
+      				<prop id ="RAM" value="4"/>
+      				<prop id="idleness_average" value="0.55"/>
+      				<prop id="freemem_average" value="0.5"/>
+      			</host>
+      			<link id="l_10" bandwidth="125MBps" latency="100us"/>
+			<host_link id="host_10" up="l_10" down="l_10"/>
+      		</zone>
+		      	<link id="link_0" bandwidth="125MBps" latency="100us"/>
+			<zone_link id="host_0" up="link_0" down="link_0"/>
+	</zone>
+	
+</platform>
