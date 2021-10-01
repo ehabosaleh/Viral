@@ -1,5 +1,6 @@
 #include <simgrid/s4u.hpp>
 #include "simgrid/plugins/energy.h"
+#include "simgrid/plugins/load.h"
 #include<iostream>
 #include<fstream>
 #include<ctime>
@@ -7,7 +8,9 @@
 #include <stdlib.h>
 #include <cmath>
 #include "simgrid/kernel/routing/ClusterZone.hpp"
-//#include"simgrid/kernel/ProfileBuilder.hpp"
+#include"simgrid/kernel/ProfileBuilder.hpp"
+#include"monitor.h"
+#include"gbfs.h"
 namespace sg4 = simgrid::s4u;
 using namespace std;
 XBT_LOG_NEW_DEFAULT_CATEGORY(simple_example, "simple example");
@@ -21,9 +24,7 @@ struct Source{
   double residue;
   double speed;
   uint64_t size;//in Bytes
-
 };
-
 struct Result{
 	std::string source_name;
 	std::string participants;
@@ -34,18 +35,17 @@ struct Result{
 	uint64_t size;};
 
 std::map<std::string,std::vector<std::string>> netzone;
-std::vector<string> working_zone;
+std::map<std::string,std::vector<std::string>> two_direction_netzone;
+std::map<std::string,vector<long>> cost;
 std::map<std::string,std::map<std::string,std::vector<double>>> computing_tree;
 std::vector<string> sources;
 bool one_time_pad_work=true;
-double computing_threshold=0.5;
 double work_to_do=10E12;
 static void host_respond(bool *);
 static void inquire(bool,bool *);
 static void get_info(sg4::Mailbox * ,Source *,bool, int*,bool *);
 static void worker();
-static void work_distributor(double,bool,string);
-static void monitor(sg4::Host *,bool *);
+static void work_distributor(double,bool);
 static void wait_for_inquiry(bool *,Result * );
 
 int main(int argc, char* argv[])
@@ -58,8 +58,7 @@ int main(int argc, char* argv[])
 
 	for(auto cluster:clusters)
 	 for(auto dst_host:cluster->get_all_hosts()){
-		 //dst_host->set_speed_profile(simgrid::kernel::profile::ProfileBuilder::from_file("availability/host_a_0_0_availability.txt"));
-
+		// dst_host->set_speed_profile(simgrid::kernel::profile::ProfileBuilder::from_file("availability/host_a_0_0_availability.txt"));
 		 auto src_host=cluster->get_all_hosts()[0];
 			 if(src_host->get_name()==dst_host->get_name()){continue;}
 			 else{
@@ -68,7 +67,7 @@ int main(int argc, char* argv[])
 					auto src=src_host->get_name();
 					auto dst=dst_host->get_name();
 					netzone[src].push_back(dst);
-					XBT_INFO("Source name is %s. Destination name is %s. link name is %s",src.data(),dst.data(),links[0]->get_name().data());
+					XBT_INFO("Source name is %s. Destination name is %s. link name is %s",src.data(),dst.data(),links[links.size()-1]->get_name().data());
 					}
 				 }
 				links.clear();
@@ -76,14 +75,30 @@ int main(int argc, char* argv[])
 
 
 		std::vector<simgrid::s4u::Link*> all_links = e.get_all_links();
-		/*
+		std::vector<simgrid::s4u::Link*> link_s;
+
 		for(int i=1;i<all_links.size();i++){
 
 			auto src=all_links[i]->get_property("src");
-				auto dst=all_links[i]->get_property("dst");
-				netzone[src].push_back(dst);
+			auto dst=all_links[i]->get_property("dst");
+			sg4::Host *host_dst=sg4::Host::by_name(dst);
+			sg4::Host *host_src=sg4::Host::by_name(src);
+			host_src->route_to(host_dst, link_s, 0);
+			auto s=host_src->get_name();
+			auto d=host_dst->get_name();
+			for(auto link : link_s){
+				XBT_INFO("Rout from %s to host %s is %s",s.data(),d.data(),link->get_name().data());
+			}
+
+			two_direction_netzone[src].push_back(dst);
+			two_direction_netzone[dst].push_back(src);
+			cost[src].push_back((long)(all_links[i]->get_latency()*1000000));
+			cost[dst].push_back((long)(all_links[i]->get_latency()*1000000));
+			netzone[src].push_back(dst);
+			link_s.clear();
 		}
-		*/
+		{
+		/*
 		 for(auto link:all_links){
 			if(link->get_name()=="link_a_b"){
 				auto src=link->get_property("src");
@@ -203,32 +218,24 @@ int main(int argc, char* argv[])
 				}
 
 		 }
-
+	*/
+		}
 	bool *inquiring=new bool;
 	*inquiring=true;
-
-	sg4::Host * root_host=sg4::Host::by_name("host_a_0_0");//define the source...
-	sg4::ActorPtr actor=sg4::Actor::create("actor_0",root_host, inquire,true,inquiring);
+	sg4::Host * root_host=sg4::Host::by_name("host_0");//define the source...
+	sg4::ActorPtr actor=sg4::Actor::create("inquiring_actor",root_host, inquire,true,inquiring);
     e.run();
-    XBT_INFO("End of simulation.");
-  return 0;
+
+    XBT_INFO("Simulation time %g Seconds", simgrid::s4u::Engine::get_clock());
+    vector<string> path=gbfs("host_0","host_10",cost,two_direction_netzone);
+    for(auto n :path){
+    	XBT_INFO("node: %s",n.data());
+    }
+
+    return 0;
 }
 
-static void monitor(sg4::Host *host,bool *busy){
-		int counter=0;
-		double average_computing=0;
 
-		while(true){
-			if (host->get_available_speed()<=computing_threshold) {counter++;}
-			else {counter=0;*busy=false;}
-			sg4::this_actor::sleep_for(300);
-			if(counter==2){*busy=true;counter=0;}// it will reach this point after 300 secs
-
-
-
-		}
-
-		}
 
 static void wait_for_inquiry(bool *inquiring,Result *result_packet){
 	while(true){
@@ -239,9 +246,9 @@ static void wait_for_inquiry(bool *inquiring,Result *result_packet){
 	}
 		}
 	if(result_packet->source_name!=sources[0])
-		sg4::ActorPtr actor=simgrid::s4u::Actor::create("new_source",sg4::Host::by_name(result_packet->source_name),work_distributor,result_packet->residue,false,"");
+		sg4::ActorPtr actor=simgrid::s4u::Actor::create("new_source",sg4::Host::by_name(result_packet->source_name),work_distributor,result_packet->residue,false);
 	else
-		sg4::ActorPtr actor=simgrid::s4u::Actor::create("new_source",sg4::Host::by_name(result_packet->source_name),work_distributor,result_packet->residue,true,"");
+		sg4::ActorPtr actor=simgrid::s4u::Actor::create("new_source",sg4::Host::by_name(result_packet->source_name),work_distributor,result_packet->residue,true);
 	result_packet->residue=0;
 	//result_packet->completion=true;
 
@@ -251,13 +258,11 @@ static void receive_outcome(sg4::Mailbox *mail_b,Result * result_packet,bool roo
 
 	auto * result=static_cast<Result *>(mail_b->get());
 	XBT_INFO("Receiving from %s result",mail_b->get_cname());
-	result_packet->participants+="," +result->participants;
-	result_packet->result+=","+result->result;
+	result_packet->participants+= ","+result->participants;
+	result_packet->result+=" "+result->result;
 	result_packet->residue+=result->residue;
 	XBT_INFO("Residue at %s is %f Mflops\n",result_packet->source_name.data(),result_packet->residue/10e6);
 	*i+=1;
-
-
 	 if(root==false && *i==computing_tree[result_packet->source_name].size()&&result_packet->residue==0){
 		XBT_INFO("Work completed at node %s. send forth up\n",result_packet->source_name.data());
 		sg4::Mailbox::by_name(result_packet->source_name)->put(result_packet, result_packet->size);
@@ -267,6 +272,7 @@ static void receive_outcome(sg4::Mailbox *mail_b,Result * result_packet,bool roo
 		bool *inquiring=new bool;
 		*inquiring=true;
 		XBT_INFO("Work did not complete at %s. Let's redistribute the residue",result_packet->source_name.data());
+		XBT_INFO("Results so far  are :\n %s",result_packet->result.data());
 		sg4::ActorPtr actor=sg4::Actor::create("actor_0",sg4::Host::by_name(result_packet->source_name), inquire,true,inquiring);// true because we update part of the computing tree not all the computing tree
 		sg4::Actor::create("departed",sg4::Host::by_name(result_packet->source_name), wait_for_inquiry,inquiring, result_packet);
 		}
@@ -275,8 +281,9 @@ static void receive_outcome(sg4::Mailbox *mail_b,Result * result_packet,bool roo
 	else if(root==true && *i==computing_tree[result_packet->source_name].size()){
 		XBT_INFO("This is the source %s",result_packet->source_name.data());
 		XBT_INFO("Total participant hosts are:%s",result_packet->participants.data());
-		XBT_INFO("Result is :\n %s",result_packet->result.data());
+		XBT_INFO("Final Result is :\n %s",result_packet->result.data());
 		XBT_INFO("Total Residue is:%f Mflops",result_packet->residue/1e6);
+		//for(host in )
 	}
 }
 
@@ -284,17 +291,16 @@ static void local_worker(double work,Result* result_packet){
 	bool * busy=new bool;
 	*busy=false;
 	double start=sg4::Engine::get_clock();
-
 	string original_file_name="availability/"+sg4::this_actor::get_host()->get_name()+"_availability.txt";
 	string temporary_file_name="availability/"+sg4::this_actor::get_host()->get_name()+"_availability_temp.txt";
 	ofstream original_file(original_file_name);// file to write
 	ifstream temporary_file(temporary_file_name);// file to read
-	string start_point=to_string(int(ceil(start)))+" "+to_string(0)+"\n";
-	int currentLine=1;
+	string start_point=to_string(int(floor(start)))+" "+to_string(0)+"\n";
+	int currentLine=0;
 	string strTemp_0,strTemp_1;
     while (temporary_file >> strTemp_0>>strTemp_1 )
     {
-    	if(currentLine==ceil(start))
+    	if(currentLine==floor(start))
     	{original_file<<start_point;}
     	else{
     				original_file<<strTemp_0<<" "<<strTemp_1<<"\n";
@@ -303,6 +309,7 @@ static void local_worker(double work,Result* result_packet){
     }
     temporary_file.close();
     original_file.close();
+
 	//sg4::this_actor::execute(work);//execution without monitoring the CPU power;
 	sg4::ActorPtr supervisor=sg4::Actor::create("monitor", sg4::this_actor::get_host(), monitor,sg4::this_actor::get_host(),busy);
 	double new_work;
@@ -345,6 +352,7 @@ static void local_worker(double work,Result* result_packet){
 	    }
 	    temporary_file_1.close();
 	    original_file_1.close();
+	sg4::this_actor::exit();
 
 }
 
@@ -352,24 +360,22 @@ static void worker(){
 		Result result_packet;
 		bool * busy=new bool;
 		*busy=false;
-
-
 		sg4::Mailbox *mail_b=sg4::Mailbox::by_name(sg4::this_actor::get_host()->get_cname());
 		auto *work=	static_cast<double *>(mail_b->get());
 		double new_work;
-		if(netzone[sg4::this_actor::get_host()->get_cname()].empty()==true){
+		if(computing_tree[sg4::this_actor::get_host()->get_cname()].empty()==true){
 			double start=sg4::Engine::get_clock();
-
+			//XBT_INFO("\n\nHost name is: %s\n\n",sg4::this_actor::get_host()->get_cname());
 			string original_file_name="availability/"+sg4::this_actor::get_host()->get_name()+"_availability.txt";
 			string temporary_file_name="availability/"+sg4::this_actor::get_host()->get_name()+"_availability_temp.txt";
 			ofstream original_file(original_file_name);// file to write
 			ifstream temporary_file(temporary_file_name);// file to read
-			string start_point=to_string(int(ceil(start)))+" "+to_string(0)+"\n";
-			int currentLine=1;
+			string start_point=to_string(int(floor(start)))+" "+to_string(0)+"\n";
+			int currentLine=0;
 			string strTemp_0,strTemp_1;
 		    while (temporary_file >> strTemp_0>>strTemp_1 )
 		    {
-		    	if(currentLine==ceil(start))
+		    	if(currentLine==floor(start))
 		    	{original_file<<start_point;}
 		    	else{
 
@@ -430,97 +436,52 @@ static void worker(){
 
 		}
 		else{
-			simgrid::s4u::Actor::create("new_source",simgrid::s4u::Host::by_name(sg4::this_actor::get_host()->get_cname()),work_distributor,*work,false,"");
+			simgrid::s4u::Actor::create("new_source",simgrid::s4u::Host::by_name(sg4::this_actor::get_host()->get_cname()),work_distributor,*work,false);
 			}
+		sg4::this_actor::exit();
 			}
 
-static void work_distributor(double work,bool root,string candinate_name){
+static void work_distributor(double work,bool root){
 	Result * result_packet=new Result();
 	int *i=new int();
 	std::string source_name=sg4::this_actor::get_host()->get_cname();
 	result_packet->source_name=source_name;
 	result_packet->residue=0;
 	simgrid::s4u::Host *source=simgrid::s4u::Host::by_name(source_name);
-	std::vector<double>computing_power;
-	std::vector<double>RAM_size;
-
 	//sg4::ActorPtr supervisor=sg4::Actor::create("monitor", sg4::this_actor::get_host(), monitor,sg4::this_actor::get_host(),busy);
 	double total_RAM_size=0;
 	double total_computing_power=0;
-	if(stod(source->get_property("idleness_average"))>computing_threshold){
+	double available_speed=stod(source->get_property("idleness_average"));
+	if(available_speed>computing_threshold){
 	 total_RAM_size=stod(source->get_property("RAM"));
-	 total_computing_power=stod(source->get_property("idleness_average"));}
-
-	if(candinate_name.empty()==true){
+	 total_computing_power=available_speed;}
 	for (auto host_name:computing_tree[source_name])
 	{
 		total_computing_power+=computing_tree[source_name][host_name.first][0];//{[0],[1]}===>{[computing_power],[ram size]}
 		total_RAM_size+=computing_tree[source_name][host_name.first][1];
-		computing_power.push_back(computing_tree[source_name][host_name.first][0]);
-		RAM_size.push_back(computing_tree[source_name][host_name.first][1]);
 	}
 	double work_per_FLOP=work/total_computing_power;
-
 	double work_per_host=0.0;
-	if(stod(source->get_property("idleness_average"))>computing_threshold){
 
-	sg4::Actor::create("local_worker",source, local_worker,(work_per_FLOP*stod(source->get_property("idleness_average"))),result_packet);
+	if(available_speed>computing_threshold){
+	sg4::Actor::create("local_worker",source, local_worker,(work_per_FLOP*available_speed),result_packet);
 	}
 	std::vector<simgrid::s4u::Mailbox * >mail_box={};
 	for(auto host:computing_tree[source_name]){			// 1)create new actors+ create new mail boxes named as new workers
-		//if(computing_tree[source_name][host.first][0]>0){
 			work_per_host=work_per_FLOP*computing_tree[source_name][host.first][0];
 			mail_box.push_back(simgrid::s4u::Mailbox::by_name(host.first));
 			simgrid::s4u::Host *new_worker=simgrid::s4u::Host::by_name(host.first);
 			sg4::Actor::create("new_worker",sg4::Host::by_name(host.first), worker);
 			sg4::Mailbox::by_name(host.first)->put(new double(work_per_host), sizeof(work_per_host));
-			XBT_INFO("Send %f Mflops from %s to %s",work_per_host/1e6,source_name.data(),new_worker->get_cname());
-		//}
+			XBT_INFO("Send %f Mflops from %s to %s\n",work_per_host/1e6,source_name.data(),new_worker->get_cname());
 		}
-		if(mail_box.size()>0){
-			for(auto mail_b:mail_box){
-				sg4::Actor::create("receiver",source, receive_outcome,mail_b,result_packet,root,i);/////////
-								}}
-		else{
-			 if(result_packet->residue==0){
-				XBT_INFO("Work completed at node %s. send forth up\n",result_packet->source_name.data());
-				sg4::Mailbox::by_name(result_packet->source_name)->put(result_packet, result_packet->size);
-				}
 
-			 else if(result_packet->residue>0){
-					bool *inquiring=new bool;
-					*inquiring=true;
-					XBT_INFO("Work did not complete at %s. Let's redistribute the residue",result_packet->source_name.data());
-					sg4::ActorPtr actor=sg4::Actor::create("actor_0",sg4::Host::by_name(result_packet->source_name), inquire,true,inquiring);// true because we update part of the computing tree not all the computing tree
-					sg4::Actor::create("departed",sg4::Host::by_name(result_packet->source_name), wait_for_inquiry,inquiring, result_packet);
-					}
-
-
-				if(root==true && *i==computing_tree[result_packet->source_name].size()){
-					XBT_INFO("This is the source %s",result_packet->source_name.data());
-					XBT_INFO("Total participant hosts are:%s",result_packet->participants.data());
-					XBT_INFO("Result is :\n %s",result_packet->result.data());
-					XBT_INFO("Total Residue is:%f Mflops",result_packet->residue/1e6);
-				}
-
-		}
-	}
-	else{
-		sg4::Host *candinate=sg4::Host::by_name(candinate_name);
-		total_computing_power=0;
-		total_RAM_size=0;
-		sg4::Mailbox *mail_box =sg4::Mailbox::by_name(candinate->get_name());
-		total_computing_power=candinate->get_available_speed();
-		total_RAM_size=stod(candinate->get_property("RAM"));
-		sg4::Actor::create("new_worker",sg4::Host::by_name(candinate->get_name()), worker);
-		mail_box->put(new double(work), sizeof(work));
-		XBT_INFO("Send %f Mflops from %s to %s",work/1e6,source_name.data(),candinate->get_cname());
-		sg4::Actor::create("receiver",sg4::Host::by_name(candinate->get_name()), receive_outcome,mail_box,result_packet,root,i);
-
-
+	for(auto mail_b:mail_box){
+				sg4::Actor::create("outcomes_receiver",source, receive_outcome,mail_b,result_packet,root,i);
+								}
+	sg4::this_actor::exit();
 	}
 
-}
 
 static void get_info(sg4::Mailbox * mail_b,Source* the_source,bool root, int *i,bool*inquiring){
 
@@ -541,9 +502,6 @@ static void get_info(sg4::Mailbox * mail_b,Source* the_source,bool root, int *i,
 					ignore=true;
 					XBT_INFO("Cannot add %s to %s. It was added before ",host_specification->source_name.data(),the_source->source_name.data());
 					break;}
-
-
-
 				}
 			if(ignore==false){
 			the_source->RAM+=host_specification->RAM;
@@ -553,7 +511,9 @@ static void get_info(sg4::Mailbox * mail_b,Source* the_source,bool root, int *i,
 			the_source->infected+=host_specification->source_name+" , "+host_specification->infected;
 			the_source->size+=host_specification->size;}
 			}
-	else {computing_tree[the_source->source_name].erase(host_specification->source_name);}//////////
+	else {
+		XBT_INFO("Cannot add %s to %s. Low Computing Power",host_specification->source_name.data(),the_source->source_name.data());
+		computing_tree[the_source->source_name].erase(host_specification->source_name);}//////////
 
 	*i+=1;
 	if(root==false && *i==netzone[the_source->source_name].size()){
@@ -568,19 +528,20 @@ if(root==true && *i==netzone[the_source->source_name].size()){
 	*inquiring=false;
 
 	if(one_time_pad_work==true){
-		sg4::Host * root_host=sg4::Host::by_name("host_a_0_0");//define the source...
-		sg4::Actor::create("actor_0",root_host, work_distributor,work_to_do,true,"");
+		sg4::Host * root_host=sg4::Host::by_name("host_0");//define the source...
+		sg4::Actor::create("actor_0",root_host, work_distributor,work_to_do,true);
 		one_time_pad_work=false;
 	}
 
 }
+sg4::this_actor::exit();
 	}
 
 
 static void inquire(bool root,bool *inquiring)
 {
 	int *i=new int();
-	XBT_INFO("The source now is: %s ",sg4::this_actor::get_host()->get_cname());
+	XBT_INFO("The source %s is inquiring about the computing capability of all other connected nodes",sg4::this_actor::get_host()->get_cname());
 	Source * the_source=new Source();
 	string host_name=simgrid::s4u::this_actor::get_host()->get_cname();
 	the_source->source_name=host_name;
@@ -614,20 +575,17 @@ for(auto mail_b:mail_box){ 				// 3)receive the response from leaf nodes
 		sg4::Actor::create("listener",sg4::Host::by_name(mail_b->get_cname()) , get_info,mail_b,the_source,root,i,inquiring);
 }
 
-
+sg4::this_actor::exit();
 }
 
 static void host_respond(bool *inquiring)
 {
-	bool *busy=new bool;
-	*busy=false;
 	 auto *msg = static_cast<std::string*>(sg4::Mailbox::by_name(sg4::this_actor::get_host()->get_cname())->get());
 	 string request=msg->c_str();
 	 if(request=="send_info"){
 	// XBT_INFO("Request has been received to: %s\n",sg4::this_actor::get_host()->get_cname());
 	 Source host={};
 	 if(netzone[sg4::this_actor::get_host()->get_cname()].empty()==true){
-
 
 		 host.RAM=stod(sg4::this_actor::get_host()->get_property("RAM"));
 		 host.freemem=stod(sg4::this_actor::get_host()->get_property("freemem_average"));
@@ -644,4 +602,5 @@ static void host_respond(bool *inquiring)
 		simgrid::s4u::Actor::create("new_source",simgrid::s4u::Host::by_name(sg4::this_actor::get_host()->get_cname()),inquire,false,inquiring);}
 
 	 }
+	 sg4::this_actor::exit();
 	 }
