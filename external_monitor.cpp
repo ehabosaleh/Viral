@@ -73,6 +73,32 @@ int main(int argc, char* argv[])
     return 0;
 }
 
+static void aternative_sender(string sender_name,string receiver_name, Result result_packet){
+	sg4::Mailbox::by_name(sender_name+'_'+receiver_name)->put(new Result( result_packet), result_packet.size);
+	XBT_INFO("This is %s sending from %s",sg4::this_actor::get_host()->get_cname(),(sender_name+'_'+receiver_name).data());
+}
+static void alternative_receiver(string receiver_name,string sender_name ){
+	auto * result=static_cast<Result *>(sg4::Mailbox::by_name((sender_name+'_'+receiver_name))->get());
+	XBT_INFO("This is %s receiving from %s ",sg4::this_actor::get_host()->get_cname(),(sender_name+'_'+receiver_name).data());
+//	aternative_sender( sender_name,*result);
+}
+static void alternative_sender_receiver(vector<string>path,Result result_packet){
+
+	//aternative_sender(path[0],result_packet);
+	for(int i=0;i<path.size()-1;i++){
+
+		if(i!=path.size()-2){
+		sg4::Actor::create("alternative_sender", sg4::Host::by_name(path[i]), aternative_sender,path[i],path[i+1],result_packet);
+		sg4::Actor::create("alternative_receiver", sg4::Host::by_name(path[i+1]), alternative_receiver,path[i+1],path[i]);
+		}
+		else{
+			sg4::Actor::create("alternative_sender", sg4::Host::by_name(path[i]), aternative_sender,path[i+1],path[0],result_packet);
+			//sg4::Actor::create("alternative_receiver", sg4::Host::by_name(path[i+1]), alternative_receiver,path[0],path[i+1]);
+		}
+		}
+
+}
+
 static void peers_connection_inquiring(){
 	netzone.clear();
 	cost.clear();
@@ -268,17 +294,19 @@ static void wait_for_inquiry(bool *inquiring,Result *result_packet){
 
 }
 
-static void receive_outcome(sg4::Mailbox *mail_b,Result * result_packet,bool root,int *i){
-	bool error=true;
+static void receive_outcome(sg4::Mailbox *mail_b,map<string,Work*> works_queue,string sender_name,Result * result_packet,bool root,int *i){
+	//Result *result;
 	try{
-	auto * result=static_cast<Result *>(mail_b->get());
-	error=false;
+
+	 auto* result=static_cast<Result *>(mail_b->get());
 	XBT_INFO("Receiving from %s result",mail_b->get_cname());
 	result_packet->participants+= ","+result->participants;
 	result_packet->result+=" "+result->result;
 	result_packet->residue+=result->residue;
-	XBT_INFO("Residue at %s is %f Mflops\n",result_packet->source_name.data(),result_packet->residue/10e6);
 	*i+=1;
+	XBT_INFO("I value is %d and size %d",*i,computing_tree[result_packet->source_name].size());
+	XBT_INFO("Residue at %s is %f Mflops\n",result_packet->source_name.data(),result_packet->residue/10e6);
+
 	 if(root==false && *i==computing_tree[result_packet->source_name].size()&&result_packet->residue==0){
 		 string super_host_name;
 		 for(map<string, map<string,vector<double >>>::iterator outer_iter=computing_tree.begin(); outer_iter!=computing_tree.end(); ++outer_iter)
@@ -288,16 +316,36 @@ static void receive_outcome(sg4::Mailbox *mail_b,Result * result_packet,bool roo
 			  break;
 		 }
 
+		try{
+			XBT_INFO("Trying to send forth up the final result %f",sg4::Engine::get_clock());
 		sg4::Mailbox::by_name(super_host_name+"_"+result_packet->source_name)->put(result_packet, result_packet->size);
 		XBT_INFO("Work completed at node %s. send forth up\n",result_packet->source_name.data());
 		}
+		catch(const simgrid::NetworkFailureException&){
+			XBT_INFO("Cannot send result from sub worker %s to %s",result_packet->source_name.data(),super_host_name.data());
+			std::vector<simgrid::s4u::Link*> all_links = sg4::Engine::get_instance()->get_all_links();
+			peers_connection_inquiring();
+			vector<string> path= gbfs(result_packet->source_name, super_host_name,cost,two_direction_netzone);
+			try{
+			if(path.empty()==false){
+			XBT_INFO("The alternative path is:");
+			for(auto s: path){XBT_INFO("%s",s.data());}
+			alternative_sender_receiver(path,*result_packet);
+			}
+			else{mail_b->put(new Result( *result_packet), result_packet->size);}
+			}
 
+		catch(...){
+				XBT_INFO("There is no other path between %s and %s",result_packet->source_name.data(),super_host_name.data());
+		}
+		}
+	 }
 	else if(*i==computing_tree[result_packet->source_name].size()&&result_packet->residue>0){
 		bool *inquiring=new bool;
 		*inquiring=true;
 		XBT_INFO("Work did not complete at %s. Let's redistribute the residue",result_packet->source_name.data());
 		XBT_INFO("Results so far  are :\n %s",result_packet->result.data());
-		sg4::ActorPtr actor=sg4::Actor::create("actor_0",sg4::Host::by_name(result_packet->source_name), inquire,true,inquiring,"");// true because we update part of the computing tree not all the computing tree
+		sg4::ActorPtr actor=sg4::Actor::create("actor_0",sg4::Host::by_name(result_packet->source_name), inquire,true,inquiring,"Does not matter");// true because we update part of the computing tree not all the computing tree
 		sg4::Actor::create("Waiting For Inquiry Procedure",sg4::Host::by_name(result_packet->source_name), wait_for_inquiry,inquiring, result_packet);
 		}
 
@@ -308,72 +356,72 @@ static void receive_outcome(sg4::Mailbox *mail_b,Result * result_packet,bool roo
 		XBT_INFO("Total Residue is:%f Mflops",result_packet->residue/1e6);
 		//for(host in )
 	}}
-	catch(...){
-		error=true;
-		XBT_INFO("%s cannot receive result from: %s",result_packet->source_name.data(),mail_b->get_cname());
-	}
-	if(error==true){
-	sg4::this_actor::sleep_for(1);
-	auto * result=static_cast<Result *>(mail_b->get());
 
-		error=false;
-		XBT_INFO("Receiving from %s result",mail_b->get_cname());
-		result_packet->participants+= ","+result->participants;
-		result_packet->result+=" "+result->result;
-		result_packet->residue+=result->residue;
-		XBT_INFO("Residue at %s is %f Mflops\n",result_packet->source_name.data(),result_packet->residue/10e6);
-		//*i+=1;
+	catch(const simgrid::NetworkFailureException&){
+		XBT_INFO("%s Cannot receive result via link: %s",result_packet->source_name.data(),mail_b->get_cname());
+		try{
+			sg4::this_actor::sleep_for(1);
+			auto * result=static_cast<Result *>(mail_b->get());
+				XBT_INFO("Receiving from %s result",mail_b->get_cname());
+				result_packet->participants+= ","+result->participants;
+				result_packet->result+=" "+result->result;
+				result_packet->residue+=result->residue;
+				XBT_INFO("Residue at %s is %f Mflops\n",result_packet->source_name.data(),result_packet->residue/10e6);
 
-		 if(root==false && *i==computing_tree[result_packet->source_name].size()&&result_packet->residue==0){
-			XBT_INFO("Work completed at node %s. send forth up\n",result_packet->source_name.data());
-			sg4::Mailbox::by_name(result_packet->source_name)->put(result_packet, result_packet->size);
+				if(root==false && *i==computing_tree[result_packet->source_name].size()&&result_packet->residue==0){
+					 string super_host_name;
+					 for(map<string, map<string,vector<double >>>::iterator outer_iter=computing_tree.begin(); outer_iter!=computing_tree.end(); ++outer_iter)
+					 for(map<string,vector<double>>::iterator inner_iter=outer_iter->second.begin(); inner_iter!=outer_iter->second.end(); ++inner_iter)
+					 if(result_packet->source_name==inner_iter->first){
+						  super_host_name=outer_iter->first;
+						  break;
+					 }
+
+					sg4::Mailbox::by_name(super_host_name+"_"+result_packet->source_name)->put(result_packet, result_packet->size);
+					XBT_INFO("Work completed at node %s. send forth up\n",result_packet->source_name.data());
+					}
+
+				else if(*i==computing_tree[result_packet->source_name].size()&&result_packet->residue>0){
+					bool *inquiring=new bool;
+					*inquiring=true;
+					XBT_INFO("Work did not complete at %s. Let's redistribute the residue",result_packet->source_name.data());
+					XBT_INFO("Results so far  are :\n %s",result_packet->result.data());
+					sg4::ActorPtr actor=sg4::Actor::create("actor_0",sg4::Host::by_name(result_packet->source_name), inquire,true,inquiring,"Does not matter");// true because we update part of the computing tree not all the computing tree
+					sg4::Actor::create("Waiting For Inquiry Procedure",sg4::Host::by_name(result_packet->source_name), wait_for_inquiry,inquiring, result_packet);
+					}
+
+				else if(root==true && *i==computing_tree[result_packet->source_name].size()){
+					XBT_INFO("This is the source %s",result_packet->source_name.data());
+					XBT_INFO("Total participant hosts are:%s",result_packet->participants.data());
+					XBT_INFO("Final Result is :\n %s",result_packet->result.data());
+					XBT_INFO("Total Residue is:%f Mflops",result_packet->residue/1e6);
+					//for(host in )
+				}
+				//*i+=1;
+
 			}
-
-		else if(*i==computing_tree[result_packet->source_name].size()&&result_packet->residue>0){
+	catch(const simgrid::NetworkFailureException&){
+		XBT_INFO("Connection was lost with %s...need to redistribute the work again ...",sender_name.data());
+		result_packet->residue+=works_queue[sender_name]->work_per_host;
+		XBT_INFO("Residue at %s is %f Mflops\n",result_packet->source_name.data(),result_packet->residue/1e6);
+		//*i+=1;
+		if(*i==computing_tree[result_packet->source_name].size()&&result_packet->residue>0){
 			bool *inquiring=new bool;
 			*inquiring=true;
 			XBT_INFO("Work did not complete at %s. Let's redistribute the residue",result_packet->source_name.data());
 			XBT_INFO("Results so far  are :\n %s",result_packet->result.data());
-			sg4::ActorPtr actor=sg4::Actor::create("actor_0",sg4::Host::by_name(result_packet->source_name), inquire,true,inquiring,"");// true because we update part of the computing tree not all the computing tree
+			sg4::ActorPtr actor=sg4::Actor::create("actor_0",sg4::Host::by_name(result_packet->source_name), inquire,true,inquiring,"Does not matter");// true because we update part of the computing tree not all the computing tree
 			sg4::Actor::create("Waiting For Inquiry Procedure",sg4::Host::by_name(result_packet->source_name), wait_for_inquiry,inquiring, result_packet);
+			}
+		//*i+=1;
 			}
 
 
-		else if(root==true && *i==computing_tree[result_packet->source_name].size()){
-			XBT_INFO("This is the source %s",result_packet->source_name.data());
-			XBT_INFO("Total participant hosts are:%s",result_packet->participants.data());
-			XBT_INFO("Final Result is :\n %s",result_packet->result.data());
-			XBT_INFO("Total Residue is:%f Mflops",result_packet->residue/1e6);
-			//for(host in )
-		}}
-
-}
-static void aternative_sender(string source_name,Result result_packet){
-	sg4::Mailbox::by_name(source_name)->put(new Result( result_packet), result_packet.size);
-	XBT_INFO("Send from %s",source_name.data());
-}
-static void alternative_receiver(string receiver_name,string sender_name ){
-	auto * result=static_cast<Result *>(sg4::Mailbox::by_name(receiver_name)->get());
-	XBT_INFO("Receive from %s ",receiver_name.data());
-	aternative_sender( sender_name,*result);
-
-
-}
-static void alternative_sender_receiver(vector<string>path,Result result_packet){
-
-	//aternative_sender(path[0],result_packet);
-	sg4::Actor::create("alternative_sender", sg4::Host::by_name(path[0]), aternative_sender,path[0],result_packet);
-
-	for(int i=1;i<path.size()-1;i++){
-		if(i!=path.size()-2){
-		sg4::Actor::create("alternative_receiver", sg4::Host::by_name(path[i]), alternative_receiver,path[i-1],path[i]);
-		}
-		else{
-			sg4::Actor::create("alternative_receiver", sg4::Host::by_name(path[i]), alternative_receiver,path[i-1],path[0]);
-		}
 		}
 
-}
+		}
+
+
 
 static void local_worker(double work,Result* result_packet){
 	bool * busy=new bool;
@@ -525,23 +573,24 @@ static void worker(sg4::Mailbox * mail_b){
 				XBT_INFO("Trying to send result from sub worker%s to super worker",sg4::this_actor::get_host()->get_cname());
 				mail_b->put(new Result( result_packet), result_packet.size);
 			}
-			catch(...){
+			catch(simgrid::NetworkFailureException& e){
 				XBT_INFO("Cannot send result from sub worker %s to %s",sg4::this_actor::get_host()->get_cname(),work_packet->source_name.data());
-
 				std::vector<simgrid::s4u::Link*> all_links = sg4::Engine::get_instance()->get_all_links();
-
 				peers_connection_inquiring();
 				vector<string> path= gbfs(sg4::this_actor::get_host()->get_cname(), work_packet->source_name,cost,two_direction_netzone);
-
+				try{
 				if(path.empty()==false){
-					XBT_INFO("The alternative path is:");
+				XBT_INFO("The alternative path is:");
 				for(auto s: path){XBT_INFO("%s",s.data());}
 				alternative_sender_receiver(path,result_packet);
+				}
+				else{mail_b->put(new Result( result_packet), result_packet.size);}
+				}
 
-				}
-				else{
+			catch(...){
 					XBT_INFO("There is no other path between %s and %s",sg4::this_actor::get_host()->get_cname(),work_packet->source_name.data());
-				}
+			}
+
 				}
 			}
 		else{
@@ -553,6 +602,7 @@ static void worker(sg4::Mailbox * mail_b){
 static void work_distributor(double work,bool root){
 	Result * result_packet=new Result();
 	Work * work_0=new Work();
+	std::map<string,Work*> works_queue;
 	work_0->source_name=sg4::this_actor::get_host()->get_name();
 	int *i=new int();
 	std::string source_name=sg4::this_actor::get_host()->get_cname();
@@ -582,14 +632,18 @@ static void work_distributor(double work,bool root){
 			//work_per_host=work_per_FLOP*computing_tree[source_name][host.first][0];
 			work_0->work_per_host=work_per_FLOP*computing_tree[source_name][host.first][0];
 			mail_box.push_back(simgrid::s4u::Mailbox::by_name(source_name+'_'+host.first));
+			works_queue[host.first]=work_0;
+		//	XBT_INFO("work per hot is%f",works_queue[host.first]->work_per_host);
 			simgrid::s4u::Host *new_worker=simgrid::s4u::Host::by_name(host.first);
 			sg4::Actor::create("new_worker",sg4::Host::by_name(host.first), worker,simgrid::s4u::Mailbox::by_name(source_name+'_'+host.first));
 			sg4::Mailbox::by_name(source_name+'_'+host.first)->put(work_0, sizeof(work_0));
 			XBT_INFO("Send %f Mflops from %s to %s\n",work_0->work_per_host/1e6,source_name.data(),new_worker->get_cname());
 		}
 
-	for(auto mail_b:mail_box){
-				sg4::Actor::create("outcomes_receiver",source, receive_outcome,mail_b,result_packet,root,i);
+	//for(auto mail_b:mail_box){
+		for(auto host:computing_tree[source_name]){
+				sg4::Mailbox *mail_b=sg4::Mailbox::by_name(source_name+'_'+host.first);
+				sg4::Actor::create("outcomes_receiver",source, receive_outcome,mail_b,works_queue,host.first,result_packet,root,i);
 								}
 	sg4::this_actor::exit();
 	}
