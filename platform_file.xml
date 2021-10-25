@@ -80,7 +80,28 @@
       				<prop id="idleness_average" value="0.55"/>
       				<prop id="freemem_average" value="0.5"/>
       			</host>
+			<host id="host_11" speed="1Gf" core="1" speed_file="availability/host_11_availability.txt" >
+				<prop id="wattage_per_state" value="100:200"/>
+      				<prop id="wattage_off" value="10" />
+      				<prop id ="RAM" value="4"/>
+      				<prop id="idleness_average" value="0.55"/>
+      				<prop id="freemem_average" value="0.5"/>
+      			</host>
 		
+			<host id="host_12" speed="1Gf" core="1" speed_file="availability/host_12_availability.txt" >
+				<prop id="wattage_per_state" value="100:200"/>
+      				<prop id="wattage_off" value="10" />
+      				<prop id ="RAM" value="4"/>
+      				<prop id="idleness_average" value="0.55"/>
+      				<prop id="freemem_average" value="0.5"/>
+      			</host>
+      			<host id="host_13" speed="1Gf" core="1" speed_file="availability/host_13_availability.txt" >
+				<prop id="wattage_per_state" value="100:200"/>
+      				<prop id="wattage_off" value="10" />
+      				<prop id ="RAM" value="4"/>
+      				<prop id="idleness_average" value="0.55"/>
+      				<prop id="freemem_average" value="0.5"/>
+      			</host>
 		
 			<link id="link_0_1" bandwidth="1MBps" latency="100us">
 				<prop id="src" value="host_0"/>
@@ -91,7 +112,7 @@
 				<prop id="src" value="host_0"/>
 				<prop id="dst" value="host_2"/>
 			</link>
-			<link id="link_0_3" bandwidth="1MBps" latency="100us">
+			<link id="link_0_3" bandwidth="1MBps" latency="100us" >
 				<prop id="src" value="host_0"/>
 				<prop id="dst" value="host_3"/>
 			</link>
@@ -104,7 +125,7 @@
 				<prop id="dst" value="host_5"/>
 			</link>
 			
-			<link id="link_4_6" bandwidth="1MBps" latency="100us">
+			<link id="link_4_6" bandwidth="1MBps" latency="100us" >
 				<prop id="src" value="host_4"/>
 				<prop id="dst" value="host_6"/>
 			</link>
@@ -113,7 +134,7 @@
 				<prop id="src" value="host_4"/>
 				<prop id="dst" value="host_7"/>
 			</link>
-			<link id="link_7_8" bandwidth="1MBps" latency="100us">
+			<link id="link_7_8" bandwidth="1MBps" latency="100us" >
 				<prop id="src" value="host_7"/>
 				<prop id="dst" value="host_8"/>
 			</link>
@@ -123,15 +144,26 @@
 			</link>
 			
 			
-			<link id="link_8_10" bandwidth="1MBps" latency="100us">
+			<link id="link_8_10" bandwidth="1MBps" latency="100us" >
 				<prop id="src" value="host_8"/>
 				<prop id="dst" value="host_10"/>
 			</link>
-			<link id="link_9_10" bandwidth="1MBps" latency="100us">
+			<link id="link_9_10" bandwidth="1MBps" latency="50us"  >
 				<prop id="src" value="host_9"/>
 				<prop id="dst" value="host_10"/>
 			</link>
-		
+			<link id="link_8_11" bandwidth="1MBps" latency="100us">
+				<prop id="src" value="host_8"/>
+				<prop id="dst" value="host_11"/>
+			</link>
+			<link id="link_11_12" bandwidth="1MBps" latency="100us"   >
+				<prop id="src" value="host_11"/>
+				<prop id="dst" value="host_12"/>
+			</link>
+			<link id="link_11_13" bandwidth="1MBps" latency="100us" state_file="links_availability/link_7_9.txt" >
+				<prop id="src" value="host_11"/>
+				<prop id="dst" value="host_13"/>
+			</link>
 		
 			<route src="host_0" dst="host_1">
 				<link_ctn id="link_0_1" />
@@ -175,7 +207,15 @@
 			<route src="host_9" dst="host_10">
 				<link_ctn id="link_9_10"/>
 			</route>
-			
+			<route src="host_8" dst="host_11">
+				<link_ctn id="link_8_11"/>
+			</route>
+			<route src="host_11" dst="host_12">
+				<link_ctn id="link_11_12"/>
+			</route>
+			<route src="host_11" dst="host_13">
+				<link_ctn id="link_11_13"/>
+			</route>
 	</zone>
 	
 </platform>
