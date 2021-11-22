@@ -48,7 +48,7 @@ std::map<std::string,vector<long>> cost;
 std::map<std::string,std::map<std::string,std::vector<double>>> computing_tree;
 std::vector<string> sources;
 bool one_time_pad_work=true;
-double work_to_do=10E12;
+double work_to_do=1E13;
 static void host_respond(sg4::Mailbox*,bool *);
 static void inquire(bool,bool *,string);
 static void get_info(sg4::Mailbox * ,Source *,bool, int*,bool *);
@@ -75,11 +75,11 @@ int main(int argc, char* argv[])
 
 static void aternative_sender(string sender_name,string receiver_name, Result result_packet){
 	sg4::Mailbox::by_name(sender_name+'_'+receiver_name)->put(new Result( result_packet), result_packet.size);
-	XBT_INFO("This is %s sending from %s",sg4::this_actor::get_host()->get_cname(),(sender_name+'_'+receiver_name).data());
+	//XBT_INFO("This is %s sending from %s",sg4::this_actor::get_host()->get_cname(),(sender_name+'_'+receiver_name).data());
 }
 static void alternative_receiver(string receiver_name,string sender_name ){
 	auto * result=static_cast<Result *>(sg4::Mailbox::by_name((sender_name+'_'+receiver_name))->get());
-	XBT_INFO("This is %s receiving from %s ",sg4::this_actor::get_host()->get_cname(),(sender_name+'_'+receiver_name).data());
+	//XBT_INFO("This is %s receiving from %s ",sg4::this_actor::get_host()->get_cname(),(sender_name+'_'+receiver_name).data());
 //	aternative_sender( sender_name,*result);
 }
 static void alternative_sender_receiver(vector<string>path,Result result_packet){
@@ -108,6 +108,7 @@ static void peers_connection_inquiring(){
 	std::vector<simgrid::kernel::routing::ClusterZone*> clusters =sg4::Engine::get_instance()->get_filtered_netzones<simgrid::kernel::routing::ClusterZone>();
 		for(auto cluster:clusters)
 		 for(auto dst_host:cluster->get_all_hosts()){
+
 			 auto src_host=cluster->get_all_hosts()[0];
 				 if(src_host->get_name()==dst_host->get_name()){continue;}
 				 else{
@@ -116,6 +117,10 @@ static void peers_connection_inquiring(){
 						auto src=src_host->get_name();
 						auto dst=dst_host->get_name();
 						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						cost[src].push_back((long)(links[links.size()-1]->get_latency()*1000000));
+						cost[dst].push_back((long)(links[links.size()-1]->get_latency()*1000000));
 						XBT_INFO("Source name is %s. Destination name is %s. link name is %s",src.data(),dst.data(),links[links.size()-1]->get_name().data());
 						}
 					 }
@@ -143,6 +148,7 @@ static void peers_connection_inquiring(){
 					for(auto link : link_s){
 						XBT_INFO("Rout from %s to host %s is %s",s.data(),d.data(),link->get_name().data());
 					}
+
 					netzone[src].push_back(dst);
 					two_direction_netzone[src].push_back(dst);
 					two_direction_netzone[dst].push_back(src);
@@ -151,134 +157,181 @@ static void peers_connection_inquiring(){
 					link_s.clear();
 				}
 			}
+/*
+
 			{
-			/*
+
 			 for(auto link:all_links){
 				if(link->get_name()=="link_a_b"){
 					auto src=link->get_property("src");
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
+					two_direction_netzone[src].push_back(dst);
+					two_direction_netzone[dst].push_back(src);
 					}
 				if(link->get_name()=="link_b_c"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
+					two_direction_netzone[src].push_back(dst);
+					two_direction_netzone[dst].push_back(src);
 					}
 				if(link->get_name()=="link_c_d"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
+					two_direction_netzone[src].push_back(dst);
+					two_direction_netzone[dst].push_back(src);
 					}
 				if(link->get_name()=="link_a_0"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
+					two_direction_netzone[src].push_back(dst);
+					two_direction_netzone[dst].push_back(src);
 					}
 				if(link->get_name()=="link_a_1"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
+					two_direction_netzone[src].push_back(dst);
+					two_direction_netzone[dst].push_back(src);
 					}
 				if(link->get_name()=="link_a_2"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
+					two_direction_netzone[src].push_back(dst);
+					two_direction_netzone[dst].push_back(src);
 					}
 				if(link->get_name()=="link_a_3"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
+					two_direction_netzone[src].push_back(dst);
+					two_direction_netzone[dst].push_back(src);
 					}
 				if(link->get_name()=="link_a_4"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
+					two_direction_netzone[src].push_back(dst);
+					two_direction_netzone[dst].push_back(src);
 					}
 
 				if(link->get_name()=="link_b_0"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
+					two_direction_netzone[src].push_back(dst);
+					two_direction_netzone[dst].push_back(src);
 					}
 				if(link->get_name()=="link_b_1"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
+					two_direction_netzone[src].push_back(dst);
+					two_direction_netzone[dst].push_back(src);
 					}
 				if(link->get_name()=="link_b_2"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
+					two_direction_netzone[src].push_back(dst);
+					two_direction_netzone[dst].push_back(src);
 					}
 				if(link->get_name()=="link_b_3"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
+					two_direction_netzone[src].push_back(dst);
+					two_direction_netzone[dst].push_back(src);
 					}
 				if(link->get_name()=="link_b_4"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
+					two_direction_netzone[src].push_back(dst);
+					two_direction_netzone[dst].push_back(src);
 					}
 				if(link->get_name()=="link_c_0"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
+					two_direction_netzone[src].push_back(dst);
+					two_direction_netzone[dst].push_back(src);
 					}
 				if(link->get_name()=="link_c_1"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
+					two_direction_netzone[src].push_back(dst);
+					two_direction_netzone[dst].push_back(src);
 					}
 				if(link->get_name()=="link_c_2"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
+					two_direction_netzone[src].push_back(dst);
+					two_direction_netzone[dst].push_back(src);
 					}
 				if(link->get_name()=="link_c_3"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
+					two_direction_netzone[src].push_back(dst);
+					two_direction_netzone[dst].push_back(src);
 					}
 				if(link->get_name()=="link_c_4"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
+					two_direction_netzone[src].push_back(dst);
+					two_direction_netzone[dst].push_back(src);
 					}
 				if(link->get_name()=="link_d_0"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
+					two_direction_netzone[src].push_back(dst);
+					two_direction_netzone[dst].push_back(src);
 					}
 				if(link->get_name()=="link_d_1"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
+					two_direction_netzone[src].push_back(dst);
+					two_direction_netzone[dst].push_back(src);
 					}
 				if(link->get_name()=="link_d_2"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
+					two_direction_netzone[src].push_back(dst);
+					two_direction_netzone[dst].push_back(src);
 					}
 				if(link->get_name()=="link_d_3"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
+					two_direction_netzone[src].push_back(dst);
+					two_direction_netzone[dst].push_back(src);
 					}
 				if(link->get_name()=="link_d_4"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
+					two_direction_netzone[src].push_back(dst);
+					two_direction_netzone[dst].push_back(src);
 					}
 
 			 }
-		*/
+
 			}
+			*/
 }
 static void wait_for_inquiry(bool *inquiring,Result *result_packet){
-	//XBT_INFO("wait for inquiring...");
 	while(true){
-
 		sg4::this_actor::sleep_for(0.1);
 	if(*inquiring==false){
 		XBT_INFO("End of re-inquiring at source %s\n",result_packet->source_name.data());
@@ -291,6 +344,7 @@ static void wait_for_inquiry(bool *inquiring,Result *result_packet){
 		sg4::ActorPtr actor=simgrid::s4u::Actor::create("new_source",sg4::Host::by_name(result_packet->source_name),work_distributor,result_packet->residue,true);
 	result_packet->residue=0;
 	//result_packet->completion=true;
+	sg4::Actor::by_pid(sg4::this_actor::get_pid())->kill();
 
 }
 
@@ -304,7 +358,7 @@ static void receive_outcome(sg4::Mailbox *mail_b,map<string,Work*> works_queue,s
 	result_packet->result+=" "+result->result;
 	result_packet->residue+=result->residue;
 	*i+=1;
-	XBT_INFO("I value is %d and size %d",*i,computing_tree[result_packet->source_name].size());
+	//XBT_INFO("I value is %d and size %d",*i,computing_tree[result_packet->source_name].size());
 	XBT_INFO("Residue at %s is %f Mflops\n",result_packet->source_name.data(),result_packet->residue/10e6);
 
 	 if(root==false && *i==computing_tree[result_packet->source_name].size()&&result_packet->residue==0){
@@ -317,7 +371,6 @@ static void receive_outcome(sg4::Mailbox *mail_b,map<string,Work*> works_queue,s
 		 }
 
 		try{
-			XBT_INFO("Trying to send forth up the final result %f",sg4::Engine::get_clock());
 		sg4::Mailbox::by_name(super_host_name+"_"+result_packet->source_name)->put(result_packet, result_packet->size);
 		XBT_INFO("Work completed at node %s. send forth up\n",result_packet->source_name.data());
 		}
@@ -334,7 +387,6 @@ static void receive_outcome(sg4::Mailbox *mail_b,map<string,Work*> works_queue,s
 			}
 			else{mail_b->put(new Result( *result_packet), result_packet->size);}
 			}
-
 		catch(...){
 				XBT_INFO("There is no other path between %s and %s",result_packet->source_name.data(),super_host_name.data());
 		}
@@ -367,7 +419,6 @@ static void receive_outcome(sg4::Mailbox *mail_b,map<string,Work*> works_queue,s
 				result_packet->result+=" "+result->result;
 				result_packet->residue+=result->residue;
 				XBT_INFO("Residue at %s is %f Mflops\n",result_packet->source_name.data(),result_packet->residue/10e6);
-
 				if(root==false && *i==computing_tree[result_packet->source_name].size()&&result_packet->residue==0){
 					 string super_host_name;
 					 for(map<string, map<string,vector<double >>>::iterator outer_iter=computing_tree.begin(); outer_iter!=computing_tree.end(); ++outer_iter)
@@ -376,11 +427,9 @@ static void receive_outcome(sg4::Mailbox *mail_b,map<string,Work*> works_queue,s
 						  super_host_name=outer_iter->first;
 						  break;
 					 }
-
 					sg4::Mailbox::by_name(super_host_name+"_"+result_packet->source_name)->put(result_packet, result_packet->size);
 					XBT_INFO("Work completed at node %s. send forth up\n",result_packet->source_name.data());
 					}
-
 				else if(*i==computing_tree[result_packet->source_name].size()&&result_packet->residue>0){
 					bool *inquiring=new bool;
 					*inquiring=true;
@@ -389,7 +438,6 @@ static void receive_outcome(sg4::Mailbox *mail_b,map<string,Work*> works_queue,s
 					sg4::ActorPtr actor=sg4::Actor::create("actor_0",sg4::Host::by_name(result_packet->source_name), inquire,true,inquiring,"Does not matter");// true because we update part of the computing tree not all the computing tree
 					sg4::Actor::create("Waiting For Inquiry Procedure",sg4::Host::by_name(result_packet->source_name), wait_for_inquiry,inquiring, result_packet);
 					}
-
 				else if(root==true && *i==computing_tree[result_packet->source_name].size()){
 					XBT_INFO("This is the source %s",result_packet->source_name.data());
 					XBT_INFO("Total participant hosts are:%s",result_packet->participants.data());
@@ -418,6 +466,7 @@ static void receive_outcome(sg4::Mailbox *mail_b,map<string,Work*> works_queue,s
 
 
 		}
+	sg4::Actor::by_pid(sg4::this_actor::get_pid())->kill();
 
 		}
 
@@ -468,8 +517,6 @@ static void local_worker(double work,Result* result_packet){
 				result_packet->completion=false;
 				result_packet->residue=work;
 				break;}}}
-
-
 	result_packet->execution_time=sg4::Engine::get_clock()-start;
 	XBT_INFO("Work is done in %s; Duration: %f Seconds",sg4::this_actor::get_host()->get_cname(),(sg4::Engine::get_clock()-start));
 	result_packet->result=sg4::this_actor::get_host()->get_name()+ " completed work in "+to_string(sg4::Engine::get_clock()-start)+" Sec\n";
@@ -488,7 +535,7 @@ static void local_worker(double work,Result* result_packet){
 	    }
 	    temporary_file_1.close();
 	    original_file_1.close();
-	sg4::this_actor::exit();
+		sg4::Actor::by_pid(sg4::this_actor::get_pid())->kill();
 
 }
 
@@ -570,7 +617,7 @@ static void worker(sg4::Mailbox * mail_b){
 				    original_file_1.close();
 
 			try{
-				XBT_INFO("Trying to send result from sub worker%s to super worker",sg4::this_actor::get_host()->get_cname());
+				XBT_INFO("Trying to send result from sub worker %s to super worker",sg4::this_actor::get_host()->get_cname());
 				mail_b->put(new Result( result_packet), result_packet.size);
 			}
 			catch(simgrid::NetworkFailureException& e){
@@ -596,7 +643,7 @@ static void worker(sg4::Mailbox * mail_b){
 		else{
 			simgrid::s4u::Actor::create("new_source",simgrid::s4u::Host::by_name(sg4::this_actor::get_host()->get_cname()),work_distributor,work,false);
 			}
-		sg4::this_actor::exit();
+		sg4::Actor::by_pid(sg4::this_actor::get_pid())->kill();
 			}
 
 static void work_distributor(double work,bool root){
@@ -645,7 +692,7 @@ static void work_distributor(double work,bool root){
 				sg4::Mailbox *mail_b=sg4::Mailbox::by_name(source_name+'_'+host.first);
 				sg4::Actor::create("outcomes_receiver",source, receive_outcome,mail_b,works_queue,host.first,result_packet,root,i);
 								}
-	sg4::this_actor::exit();
+		sg4::Actor::by_pid(sg4::this_actor::get_pid())->kill();
 	}
 
 
@@ -702,7 +749,7 @@ if(root==true && *i==netzone[the_source->source_name].size()){
 	}
 
 }
-//sg4::this_actor::exit();
+sg4::Actor::by_pid(sg4::this_actor::get_pid())->kill();
 	}
 
 
@@ -724,7 +771,6 @@ static void inquire(bool root,bool *inquiring,string inquirer)
 	}
 
 	sources.push_back(the_source->source_name);
-
 	vector<string> message={the_source->source_name,"send_info"};
 	std::vector<simgrid::s4u::Mailbox * >mail_box={};
 
@@ -745,7 +791,7 @@ for(auto mail_b:mail_box){ 				// 3)receive the response from leaf nodes
 		sg4::Actor::create("listener",sg4::Host::by_name(host_name) , get_info,mail_b,the_source,root,i,inquiring);
 }
 
-sg4::this_actor::exit();
+sg4::Actor::by_pid(sg4::this_actor::get_pid())->kill();
 }
 
 static void host_respond(sg4::Mailbox *mail_b ,bool *inquiring)
@@ -767,13 +813,9 @@ static void host_respond(sg4::Mailbox *mail_b ,bool *inquiring)
 		 host.source_name=sg4::this_actor::get_host()->get_cname();
 		 host.size=1024;
 		 mail_b->put(new Source(host), host.size);//send from leaf node;
-
-
 	 }
 	else{
-
 		simgrid::s4u::Actor::create("new_source",simgrid::s4u::Host::by_name(sg4::this_actor::get_host()->get_cname()),inquire,false,inquiring,msg->data()[0]);}
-
 	 }
-	 sg4::this_actor::exit();
+		sg4::Actor::by_pid(sg4::this_actor::get_pid())->kill();
 	 }
