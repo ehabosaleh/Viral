@@ -507,7 +507,7 @@ static void local_worker(double work,Result* result_packet){
 	result_packet->completion=true;break;}
 	else if (*busy==true){
 			XBT_INFO("Host  %s was suspended at speed %f",sg4::this_actor::get_host()->get_cname(),sg4::this_actor::get_host()->get_available_speed());
-			sg4::this_actor::sleep_for(300);
+		//	sg4::this_actor::sleep_for(300);
 			if (*busy==false){
 				XBT_INFO("Host %s can return to work now",sg4::this_actor::get_host()->get_cname());
 				continue;}
@@ -580,7 +580,7 @@ static void worker(sg4::Mailbox * mail_b){
 			if(work<new_work){sg4::this_actor::execute(work);supervisor->kill();result_packet.completion=true;result_packet.residue=0;break;}
 			if (*busy==true){// the condition should monitor the cpu power for long time
 				XBT_INFO("Host %s was suspended at speed %f",sg4::this_actor::get_host()->get_cname(),sg4::this_actor::get_host()->get_available_speed());
-				sg4::this_actor::sleep_for(300);
+			//	sg4::this_actor::sleep_for(300);
 				if (*busy==false){
 					XBT_INFO("Host %s can return to work now",sg4::this_actor::get_host()->get_cname());
 					continue;}
