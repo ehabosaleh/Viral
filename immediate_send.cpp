@@ -53,6 +53,7 @@ static void host_respond(sg4::Mailbox*,bool *);
 static void inquire(bool,bool *,string);
 static void get_info(sg4::Mailbox * ,Source *,bool, int*,bool *);
 static void worker(sg4::Mailbox*);
+static void local_worker(double,Result*);
 static void work_distributor(double,bool);
 static void wait_for_inquiry(bool *,Result * );
 static void peers_connection_inquiring();
@@ -355,8 +356,11 @@ static void receive_outcome(sg4::Mailbox *mail_b,map<string,Work*> works_queue,s
 	 auto* result=static_cast<Result *>(mail_b->get());
 	XBT_INFO("Receiving from %s result",mail_b->get_cname());
 	result_packet->participants.push_back(result->source_name);
+
+
 	result_packet->result+=" "+result->result;
 	result_packet->residue+=result->residue;
+
 	*i+=1;
 	//XBT_INFO("I value is %d and size %d",*i,computing_tree[result_packet->source_name].size());
 	XBT_INFO("Residue at %s is %f Mflops\n",result_packet->source_name.data(),result_packet->residue/1e6);
@@ -393,22 +397,31 @@ static void receive_outcome(sg4::Mailbox *mail_b,map<string,Work*> works_queue,s
 		}
 	 }
 	else if(result_packet->residue>0){
-		XBT_INFO("Work did not complete at %s. Let's send it to the vacant host %s",result_packet->source_name.data(),result->source_name.data());
 		if(result->residue>0){
 			for(auto host_name:result_packet->participants){
-				if(host_name!=result->source_name){
-								simgrid::s4u::Host *new_worker=simgrid::s4u::Host::by_name(host_name);
-								sg4::Actor::create("new_worker",sg4::Host::by_name(host_name), worker,simgrid::s4u::Mailbox::by_name(result_packet->source_name+'_'+host_name));
-								Work *residue_work=new Work;;
-								residue_work->source_name=result_packet->source_name;
-								residue_work->work_per_host=result_packet->residue;
-								sg4::Mailbox::by_name(result_packet->source_name+'_'+host_name)->put(residue_work, sizeof(residue_work));
-
-								XBT_INFO("Send %f Mflops from %s to %s\n",result->residue/1e6,result_packet->source_name.data(),host_name.data());
-								*i-=1;
-								result_packet->residue-=result->residue;
-								sg4::Actor::create("outcomes_receiver",sg4::Host::by_name(result_packet->source_name), receive_outcome,sg4::Mailbox::by_name(result_packet->source_name+'_'+host_name),works_queue,host_name,result_packet,root,i);
-								break;
+				if(host_name!=result->source_name && host_name!=result_packet->source_name){
+					XBT_INFO("Work did not complete at %s. Let's send it to the vacant host %s",result_packet->source_name.data(),host_name.data());
+					simgrid::s4u::Host *new_worker=simgrid::s4u::Host::by_name(host_name);
+					sg4::Actor::create("new_worker",sg4::Host::by_name(host_name), worker,simgrid::s4u::Mailbox::by_name(result_packet->source_name+'_'+host_name));
+					Work *residue_work=new Work;;
+					residue_work->source_name=result_packet->source_name;
+					residue_work->work_per_host=result_packet->residue;
+					sg4::Mailbox::by_name(result_packet->source_name+'_'+host_name)->put(residue_work, sizeof(residue_work));
+					XBT_INFO("Send %f Mflops from %s to %s\n",result->residue/1e6,result_packet->source_name.data(),host_name.data());
+					*i-=1;
+					result_packet->residue=0;
+					sg4::Actor::create("outcomes_receiver",sg4::Host::by_name(result_packet->source_name), receive_outcome,sg4::Mailbox::by_name(result_packet->source_name+'_'+host_name),works_queue,host_name,result_packet,root,i);
+					break;
+				}
+				else if(host_name!=result->source_name && host_name==result_packet->source_name){
+					XBT_INFO("Work did not complete at %s. Let's run it in the vacant host %s",result_packet->source_name.data(),host_name.data());
+					simgrid::s4u::Host *new_worker=simgrid::s4u::Host::by_name(host_name);
+					Work *residue_work=new Work;;
+					residue_work->source_name=result_packet->source_name;
+					residue_work->work_per_host=result_packet->residue;
+					sg4::Actor::create("local_worker",new_worker, local_worker,residue_work->work_per_host,result_packet);
+					result_packet->residue=0;
+					break;
 				}
 			}
 		}
@@ -526,7 +539,7 @@ static void local_worker(double work,Result* result_packet){
 	result_packet->completion=true;break;}
 	else if (*busy==true){
 			XBT_INFO("Host  %s was suspended at speed %f",sg4::this_actor::get_host()->get_cname(),sg4::this_actor::get_host()->get_available_speed());
-			sg4::this_actor::sleep_for(300);
+			//sg4::this_actor::sleep_for(300);
 			if (*busy==false){
 				XBT_INFO("Host %s can return to work now",sg4::this_actor::get_host()->get_cname());
 				continue;}
@@ -599,7 +612,7 @@ static void worker(sg4::Mailbox * mail_b){
 			if(work<new_work){sg4::this_actor::execute(work);supervisor->kill();result_packet.completion=true;result_packet.residue=0;break;}
 			if (*busy==true){// the condition should monitor the cpu power for long time
 				XBT_INFO("Host %s was suspended at speed %f",sg4::this_actor::get_host()->get_cname(),sg4::this_actor::get_host()->get_available_speed());
-				sg4::this_actor::sleep_for(300);
+			//	sg4::this_actor::sleep_for(300);
 				if (*busy==false){
 					XBT_INFO("Host %s can return to work now",sg4::this_actor::get_host()->get_cname());
 					continue;}
