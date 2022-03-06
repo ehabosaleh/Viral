@@ -11,6 +11,7 @@
 #include"simgrid/kernel/ProfileBuilder.hpp"
 #include"monitor.h"
 #include"gbfs.h"
+
 namespace sg4 = simgrid::s4u;
 using namespace std;
 XBT_LOG_NEW_DEFAULT_CATEGORY(simple_example, "simple example");
