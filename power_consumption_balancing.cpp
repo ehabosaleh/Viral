@@ -22,14 +22,14 @@ struct Source{
   double RAM;
   double freemem;
   double residue;
-  double speed;
+  double available_speed;
   std::string super_node;
   uint64_t size;//in Bytes
 };
 struct Result{
 	std::string source_name;
 	std::string super_node;
-	std::string participants;
+	std::vector<std::string> participants;
 	std::string result;
 	double execution_time;
 	bool completion;
@@ -48,7 +48,7 @@ std::map<std::string,vector<long>> cost;
 std::map<std::string,std::map<std::string,std::vector<double>>> computing_tree;
 std::vector<string> sources;
 bool one_time_pad_work=true;
-double work_to_do=1E13;
+double work_to_do=1E18;
 static void host_respond(sg4::Mailbox*,bool *);
 static void inquire(bool,bool *,string);
 static void get_info(sg4::Mailbox * ,Source *,bool, int*,bool *);
@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
 	peers_connection_inquiring();
 	bool *inquiring=new bool;
 	*inquiring=true;
-	sg4::Host * root_host=sg4::Host::by_name("host_0");//define the source...
+	sg4::Host * root_host=sg4::Host::by_name("host_a_0_0");//define the source...
 	sg4::ActorPtr actor=sg4::Actor::create("inquiring_actor",root_host, inquire,true,inquiring,"");
     e.run();
 
@@ -121,7 +121,7 @@ static void peers_connection_inquiring(){
 						two_direction_netzone[dst].push_back(src);
 						cost[src].push_back((long)(links[links.size()-1]->get_latency()*1000000));
 						cost[dst].push_back((long)(links[links.size()-1]->get_latency()*1000000));
-						XBT_INFO("Source name is %s. Destination name is %s. link name is %s",src.data(),dst.data(),links[links.size()-1]->get_name().data());
+						//XBT_INFO("Source name is %s. Destination name is %s. link name is %s",src.data(),dst.data(),links[links.size()-1]->get_name().data());
 						}
 					 }
 					links.clear();
@@ -130,7 +130,7 @@ static void peers_connection_inquiring(){
 
 			std::vector<simgrid::s4u::Link*> all_links = sg4::Engine::get_instance()->get_all_links();
 			std::vector<simgrid::s4u::Link*> link_s;
-
+			/*
 			for(int i=1;i<all_links.size();i++){
 				if (all_links[i]->is_on()==false){
 					auto src=all_links[i]->get_property("src");
@@ -157,11 +157,473 @@ static void peers_connection_inquiring(){
 					link_s.clear();
 				}
 			}
-/*
-
+			*/
+			// */
 			{
 
-			 for(auto link:all_links){
+			  for(auto link:all_links){
+
+			if(link->get_name()=="link_a_0"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_a_1"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_a_2"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_a_3"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+
+			if(link->get_name()=="link_b_0"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_b_1"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_b_2"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_b_3"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+
+			if(link->get_name()=="link_c_0"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_c_1"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_c_2"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_c_3"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+
+
+			if(link->get_name()=="link_d_0"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_d_1"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_d_2"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_d_3"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_e_0"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_e_1"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_e_2"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_e_3"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+
+
+			if(link->get_name()=="link_f_0"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_f_1"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_f_2"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_f_3"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+
+			if(link->get_name()=="link_g_0"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_g_1"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_g_2"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_g_3"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+
+			if(link->get_name()=="link_h_0"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_h_1"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_h_2"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_h_3"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+
+			if(link->get_name()=="link_i_0"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_i_1"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_i_2"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_i_3"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_j_0"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_j_1"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_j_2"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_j_3"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_k_0"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_k_1"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_k_2"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_k_3"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+
+			if(link->get_name()=="link_l_0"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_l_1"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_l_2"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_l_3"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+
+			if(link->get_name()=="link_m_0"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_m_1"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_m_2"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_m_3"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_n_0"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_n_1"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_n_2"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_n_3"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_o_0"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_o_1"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_o_2"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_o_3"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_a_r_0"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_a_r_1"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_a_r_2"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+			if(link->get_name()=="link_a_r_3"){
+						auto src=link->get_property("src");
+						auto dst=link->get_property("dst");
+						netzone[src].push_back(dst);
+						two_direction_netzone[src].push_back(dst);
+						two_direction_netzone[dst].push_back(src);
+						}
+
+
 				if(link->get_name()=="link_a_b"){
 					auto src=link->get_property("src");
 					auto dst=link->get_property("dst");
@@ -169,6 +631,8 @@ static void peers_connection_inquiring(){
 					two_direction_netzone[src].push_back(dst);
 					two_direction_netzone[dst].push_back(src);
 					}
+
+
 				if(link->get_name()=="link_b_c"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
@@ -176,6 +640,7 @@ static void peers_connection_inquiring(){
 					two_direction_netzone[src].push_back(dst);
 					two_direction_netzone[dst].push_back(src);
 					}
+
 				if(link->get_name()=="link_c_d"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
@@ -183,35 +648,9 @@ static void peers_connection_inquiring(){
 					two_direction_netzone[src].push_back(dst);
 					two_direction_netzone[dst].push_back(src);
 					}
-				if(link->get_name()=="link_a_0"){
-					auto src=link->get_property("src"); // using the link for direct connection in both directions
-					auto dst=link->get_property("dst");
-					netzone[src].push_back(dst);
-					two_direction_netzone[src].push_back(dst);
-					two_direction_netzone[dst].push_back(src);
-					}
-				if(link->get_name()=="link_a_1"){
-					auto src=link->get_property("src"); // using the link for direct connection in both directions
-					auto dst=link->get_property("dst");
-					netzone[src].push_back(dst);
-					two_direction_netzone[src].push_back(dst);
-					two_direction_netzone[dst].push_back(src);
-					}
-				if(link->get_name()=="link_a_2"){
-					auto src=link->get_property("src"); // using the link for direct connection in both directions
-					auto dst=link->get_property("dst");
-					netzone[src].push_back(dst);
-					two_direction_netzone[src].push_back(dst);
-					two_direction_netzone[dst].push_back(src);
-					}
-				if(link->get_name()=="link_a_3"){
-					auto src=link->get_property("src"); // using the link for direct connection in both directions
-					auto dst=link->get_property("dst");
-					netzone[src].push_back(dst);
-					two_direction_netzone[src].push_back(dst);
-					two_direction_netzone[dst].push_back(src);
-					}
-				if(link->get_name()=="link_a_4"){
+
+				///////////
+				if(link->get_name()=="link_d_e"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
@@ -219,116 +658,99 @@ static void peers_connection_inquiring(){
 					two_direction_netzone[dst].push_back(src);
 					}
 
-				if(link->get_name()=="link_b_0"){
+				////////////////////////////////
+				if(link->get_name()=="link_e_f"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
 					two_direction_netzone[src].push_back(dst);
 					two_direction_netzone[dst].push_back(src);
 					}
-				if(link->get_name()=="link_b_1"){
+
+				////////////////////////////////
+				if(link->get_name()=="link_f_g"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
 					two_direction_netzone[src].push_back(dst);
 					two_direction_netzone[dst].push_back(src);
 					}
-				if(link->get_name()=="link_b_2"){
+
+				if(link->get_name()=="link_g_h"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
 					two_direction_netzone[src].push_back(dst);
 					two_direction_netzone[dst].push_back(src);
 					}
-				if(link->get_name()=="link_b_3"){
+
+
+				//////////////////////////////////
+				if(link->get_name()=="link_h_i"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
 					two_direction_netzone[src].push_back(dst);
 					two_direction_netzone[dst].push_back(src);
 					}
-				if(link->get_name()=="link_b_4"){
+
+				/////////////////////////////////////
+				if(link->get_name()=="link_i_j"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
 					two_direction_netzone[src].push_back(dst);
 					two_direction_netzone[dst].push_back(src);
 					}
-				if(link->get_name()=="link_c_0"){
+
+				if(link->get_name()=="link_j_k"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
 					two_direction_netzone[src].push_back(dst);
 					two_direction_netzone[dst].push_back(src);
 					}
-				if(link->get_name()=="link_c_1"){
+
+				////////////////////////////////
+				if(link->get_name()=="link_k_l"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
 					two_direction_netzone[src].push_back(dst);
 					two_direction_netzone[dst].push_back(src);
 					}
-				if(link->get_name()=="link_c_2"){
+
+				if(link->get_name()=="link_l_m"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
 					two_direction_netzone[src].push_back(dst);
 					two_direction_netzone[dst].push_back(src);
 					}
-				if(link->get_name()=="link_c_3"){
+
+				if(link->get_name()=="link_m_n"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
 					two_direction_netzone[src].push_back(dst);
 					two_direction_netzone[dst].push_back(src);
 					}
-				if(link->get_name()=="link_c_4"){
+
+
+				if(link->get_name()=="link_n_o"){
 					auto src=link->get_property("src"); // using the link for direct connection in both directions
 					auto dst=link->get_property("dst");
 					netzone[src].push_back(dst);
 					two_direction_netzone[src].push_back(dst);
 					two_direction_netzone[dst].push_back(src);
 					}
-				if(link->get_name()=="link_d_0"){
-					auto src=link->get_property("src"); // using the link for direct connection in both directions
-					auto dst=link->get_property("dst");
-					netzone[src].push_back(dst);
-					two_direction_netzone[src].push_back(dst);
-					two_direction_netzone[dst].push_back(src);
-					}
-				if(link->get_name()=="link_d_1"){
-					auto src=link->get_property("src"); // using the link for direct connection in both directions
-					auto dst=link->get_property("dst");
-					netzone[src].push_back(dst);
-					two_direction_netzone[src].push_back(dst);
-					two_direction_netzone[dst].push_back(src);
-					}
-				if(link->get_name()=="link_d_2"){
-					auto src=link->get_property("src"); // using the link for direct connection in both directions
-					auto dst=link->get_property("dst");
-					netzone[src].push_back(dst);
-					two_direction_netzone[src].push_back(dst);
-					two_direction_netzone[dst].push_back(src);
-					}
-				if(link->get_name()=="link_d_3"){
-					auto src=link->get_property("src"); // using the link for direct connection in both directions
-					auto dst=link->get_property("dst");
-					netzone[src].push_back(dst);
-					two_direction_netzone[src].push_back(dst);
-					two_direction_netzone[dst].push_back(src);
-					}
-				if(link->get_name()=="link_d_4"){
-					auto src=link->get_property("src"); // using the link for direct connection in both directions
-					auto dst=link->get_property("dst");
-					netzone[src].push_back(dst);
-					two_direction_netzone[src].push_back(dst);
-					two_direction_netzone[dst].push_back(src);
-					}
+
 
 			 }
+			 XBT_INFO("End of netzone construct...");
 
 			}
-			*/
+			//*/
 }
 static void wait_for_inquiry(bool *inquiring,Result *result_packet){
 	while(true){
@@ -354,7 +776,7 @@ static void receive_outcome(sg4::Mailbox *mail_b,map<string,Work*> works_queue,s
 
 	 auto* result=static_cast<Result *>(mail_b->get());
 	XBT_INFO("Receiving from %s result",mail_b->get_cname());
-	result_packet->participants+= ","+result->participants;
+	result_packet->participants.push_back(result->source_name);
 	result_packet->result+=" "+result->result;
 	result_packet->residue+=result->residue;
 	*i+=1;
@@ -403,7 +825,9 @@ static void receive_outcome(sg4::Mailbox *mail_b,map<string,Work*> works_queue,s
 
 	else if(root==true && *i==computing_tree[result_packet->source_name].size()){
 		XBT_INFO("This is the source %s",result_packet->source_name.data());
-		XBT_INFO("Total participant hosts are:%s",result_packet->participants.data());
+		for(auto participant:result_packet->participants){
+								XBT_INFO("%s",participant.data());
+							}
 		XBT_INFO("Final Result is :\n %s",result_packet->result.data());
 		XBT_INFO("Total Residue is:%f Mflops",result_packet->residue/1e6);
 		//for(host in )
@@ -415,7 +839,7 @@ static void receive_outcome(sg4::Mailbox *mail_b,map<string,Work*> works_queue,s
 			sg4::this_actor::sleep_for(1);
 			auto * result=static_cast<Result *>(mail_b->get());
 				XBT_INFO("Receiving from %s result",mail_b->get_cname());
-				result_packet->participants+= ","+result->participants;
+				result_packet->participants.push_back(result->source_name);
 				result_packet->result+=" "+result->result;
 				result_packet->residue+=result->residue;
 				XBT_INFO("Residue at %s is %f Mflops\n",result_packet->source_name.data(),result_packet->residue/10e6);
@@ -440,7 +864,9 @@ static void receive_outcome(sg4::Mailbox *mail_b,map<string,Work*> works_queue,s
 					}
 				else if(root==true && *i==computing_tree[result_packet->source_name].size()){
 					XBT_INFO("This is the source %s",result_packet->source_name.data());
-					XBT_INFO("Total participant hosts are:%s",result_packet->participants.data());
+					for(auto participant:result_packet->participants){
+											XBT_INFO("%s",participant.data());
+										}
 					XBT_INFO("Final Result is :\n %s",result_packet->result.data());
 					XBT_INFO("Total Residue is:%f Mflops",result_packet->residue/1e6);
 					//for(host in )
@@ -475,8 +901,9 @@ static void receive_outcome(sg4::Mailbox *mail_b,map<string,Work*> works_queue,s
 static void local_worker(double work,Result* result_packet){
 	bool * busy=new bool;
 	*busy=false;
+	XBT_INFO("%s starts doing the alloted work",result_packet->source_name.data());
 	double start=sg4::Engine::get_clock();
-	string original_file_name="availability/"+sg4::this_actor::get_host()->get_name()+"_availability.txt";
+	/*string original_file_name="availability/"+sg4::this_actor::get_host()->get_name()+"_availability.txt";
 	string temporary_file_name="availability/"+sg4::this_actor::get_host()->get_name()+"_availability_temp.txt";
 	ofstream original_file(original_file_name);// file to write
 	ifstream temporary_file(temporary_file_name);// file to read
@@ -494,7 +921,7 @@ static void local_worker(double work,Result* result_packet){
     }
     temporary_file.close();
     original_file.close();
-
+*/
 	//sg4::this_actor::execute(work);//execution without monitoring the CPU power;
 	sg4::ActorPtr supervisor=sg4::Actor::create("monitor", sg4::this_actor::get_host(), monitor,sg4::this_actor::get_host(),busy);
 	double new_work;
@@ -507,7 +934,7 @@ static void local_worker(double work,Result* result_packet){
 	result_packet->completion=true;break;}
 	else if (*busy==true){
 			XBT_INFO("Host  %s was suspended at speed %f",sg4::this_actor::get_host()->get_cname(),sg4::this_actor::get_host()->get_available_speed());
-		//	sg4::this_actor::sleep_for(300);
+			//sg4::this_actor::sleep_for(300);
 			if (*busy==false){
 				XBT_INFO("Host %s can return to work now",sg4::this_actor::get_host()->get_cname());
 				continue;}
@@ -519,9 +946,11 @@ static void local_worker(double work,Result* result_packet){
 				break;}}}
 	result_packet->execution_time=sg4::Engine::get_clock()-start;
 	XBT_INFO("Work is done in %s; Duration: %f Seconds",sg4::this_actor::get_host()->get_cname(),(sg4::Engine::get_clock()-start));
-	result_packet->result=sg4::this_actor::get_host()->get_name()+ " completed work in "+to_string(sg4::Engine::get_clock()-start)+" Sec\n";
-	result_packet->participants=sg4::this_actor::get_host()->get_cname();
+	result_packet->result+=" "+sg4::this_actor::get_host()->get_name()+ " completed work in "+to_string(sg4::Engine::get_clock()-start)+" Sec\n";
+	if(result_packet->completion==true){
+	result_packet->participants.push_back(sg4::this_actor::get_host()->get_cname());};
 
+			/*
 	string original_file_name_1="availability/"+sg4::this_actor::get_host()->get_name()+"_availability.txt";
 	string temporary_file_name_1="availability/"+sg4::this_actor::get_host()->get_name()+"_availability_temp.txt";
 	ifstream original_file_1(original_file_name_1);// file to write
@@ -536,7 +965,7 @@ static void local_worker(double work,Result* result_packet){
 	    temporary_file_1.close();
 	    original_file_1.close();
 		sg4::Actor::by_pid(sg4::this_actor::get_pid())->kill();
-
+*/
 }
 
 static void worker(sg4::Mailbox * mail_b){
@@ -549,7 +978,10 @@ static void worker(sg4::Mailbox * mail_b){
 		double new_work;
 		if(computing_tree[sg4::this_actor::get_host()->get_cname()].empty()==true){
 			double start=sg4::Engine::get_clock();
+			XBT_INFO("%s starts doing the alloted work",sg4::this_actor::get_host()->get_cname());
+
 			//XBT_INFO("\n\nHost name is: %s\n\n",sg4::this_actor::get_host()->get_cname());
+			/*
 			string original_file_name="availability/"+sg4::this_actor::get_host()->get_name()+"_availability.txt";
 			string temporary_file_name="availability/"+sg4::this_actor::get_host()->get_name()+"_availability_temp.txt";
 			ofstream original_file(original_file_name);// file to write
@@ -569,7 +1001,7 @@ static void worker(sg4::Mailbox * mail_b){
 		    }
 		    temporary_file.close();
 		    original_file.close();
-
+			*/
 
 			//sg4::this_actor::execute(*work);//execution without monitoring the cpu power;
 			sg4::ActorPtr supervisor=sg4::Actor::create("monitor", sg4::this_actor::get_host(), monitor,sg4::this_actor::get_host(),busy);
@@ -577,7 +1009,9 @@ static void worker(sg4::Mailbox * mail_b){
 			new_work=sg4::this_actor::get_host()->get_available_speed()*sg4::this_actor::get_host()->get_speed();
 			sg4::this_actor::execute(new_work);
 			work=work-new_work;
-			if(work<new_work){sg4::this_actor::execute(work);supervisor->kill();result_packet.completion=true;result_packet.residue=0;break;}
+			if(work<new_work){		//	result_packet.participants.push_back(sg4::this_actor::get_host()->get_cname());
+								sg4::this_actor::execute(work);supervisor->kill();
+								result_packet.completion=true;result_packet.residue=0;break;}
 			if (*busy==true){// the condition should monitor the cpu power for long time
 				XBT_INFO("Host %s was suspended at speed %f",sg4::this_actor::get_host()->get_cname(),sg4::this_actor::get_host()->get_available_speed());
 			//	sg4::this_actor::sleep_for(300);
@@ -598,10 +1032,9 @@ static void worker(sg4::Mailbox * mail_b){
 			XBT_INFO("Work is done in %s; Duration: %f Seconds",sg4::this_actor::get_host()->get_cname(),(sg4::Engine::get_clock()-start));
 			result_packet.result=sg4::this_actor::get_host()->get_name()+ " completed work in "+to_string(sg4::Engine::get_clock()-start)+" Sec\n";
 			result_packet.source_name=sg4::this_actor::get_host()->get_cname();
-			result_packet.participants=sg4::this_actor::get_host()->get_cname();
 			result_packet.size=1024;
 
-
+				/*
 				string original_file_name_1="availability/"+sg4::this_actor::get_host()->get_name()+"_availability.txt";
 				string temporary_file_name_1="availability/"+sg4::this_actor::get_host()->get_name()+"_availability_temp.txt";
 				ifstream original_file_1(original_file_name_1);// file to write
@@ -615,7 +1048,7 @@ static void worker(sg4::Mailbox * mail_b){
 				    }
 				    temporary_file_1.close();
 				    original_file_1.close();
-
+				*/
 			try{
 				XBT_INFO("Trying to send result from sub worker %s to super worker",sg4::this_actor::get_host()->get_cname());
 				mail_b->put(new Result( result_packet), result_packet.size);
@@ -641,6 +1074,13 @@ static void worker(sg4::Mailbox * mail_b){
 				}
 			}
 		else{
+			for(map<string,vector<double>>::iterator inner_iter=computing_tree[sg4::this_actor::get_host()->get_cname()].begin(); inner_iter!=computing_tree[sg4::this_actor::get_host()->get_cname()].end(); ++inner_iter)
+			{
+			sg4::Host * rebooted =sg4::Host::by_name(inner_iter->first);
+			if(rebooted->is_on()==false){
+			rebooted->turn_on();
+			XBT_INFO("%s has turnned on to compute residue work",rebooted->get_cname());
+			}}
 			simgrid::s4u::Actor::create("new_source",simgrid::s4u::Host::by_name(sg4::this_actor::get_host()->get_cname()),work_distributor,work,false);
 			}
 		sg4::Actor::by_pid(sg4::this_actor::get_pid())->kill();
@@ -662,7 +1102,9 @@ static void work_distributor(double work,bool root){
 	double available_speed=stod(source->get_property("idleness_average"));
 	if(available_speed>computing_threshold){
 	 total_RAM_size=stod(source->get_property("RAM"));
-	 total_computing_power=available_speed;}
+	 total_computing_power=source->get_available_speed()*source->get_speed();
+
+	}
 	for (auto host_name:computing_tree[source_name])
 	{
 		total_computing_power+=computing_tree[source_name][host_name.first][0];//{[0],[1]}===>{[computing_power],[ram size]}
@@ -671,8 +1113,8 @@ static void work_distributor(double work,bool root){
 	double work_per_FLOP=work/total_computing_power;
 	double work_per_host=0.0;
 
-	if(available_speed>computing_threshold){
-	sg4::Actor::create("local_worker",source, local_worker,(work_per_FLOP*available_speed),result_packet);
+	if(source->get_available_speed()>computing_threshold){
+	sg4::Actor::create("local_worker",source, local_worker,(work_per_FLOP*source->get_available_speed()*source->get_speed()),result_packet);
 	}
 	std::vector<simgrid::s4u::Mailbox * >mail_box={};
 	for(auto host:computing_tree[source_name]){			// 1)create new actors+ create new mail boxes named as new workers
@@ -700,9 +1142,11 @@ static void get_info(sg4::Mailbox * mail_b,Source* the_source,bool root, int *i,
 	auto *host_specification = static_cast<Source *>(mail_b->get());// get from put in respond() function
 	XBT_INFO("Receiving responses via the link %s...",mail_b->get_cname());
 	XBT_INFO("Receiving %f of free RAM memory",host_specification->freemem);
-	XBT_INFO("Receiving %f of computing power\n",host_specification->computing_power);
+	XBT_INFO("Receiving %f of computing power in FLOPS\n",host_specification->computing_power);
+	XBT_INFO("Receiving %f of available CPU power [0-1]\n",host_specification->available_speed);
+
 	bool ignore=false;
-	if(host_specification->computing_power>computing_threshold)
+	if(host_specification->available_speed>computing_threshold)
 	  {
 			computing_tree[the_source->source_name][host_specification->source_name]={host_specification->computing_power,host_specification->freemem};
 			int counter_0=0;
@@ -719,7 +1163,7 @@ static void get_info(sg4::Mailbox * mail_b,Source* the_source,bool root, int *i,
 			the_source->RAM+=host_specification->RAM;
 			the_source->freemem+=host_specification->freemem;
 			the_source->computing_power+=host_specification->computing_power;
-			the_source->speed+=host_specification->speed;
+			//the_source->available_speed+=host_specification->available_speed;
 			the_source->infected+=host_specification->source_name+" , "+host_specification->infected;
 			the_source->size+=host_specification->size;
 			}
@@ -735,20 +1179,20 @@ static void get_info(sg4::Mailbox * mail_b,Source* the_source,bool root, int *i,
 		sg4::Mailbox::by_name(the_source->super_node+'_'+the_source->source_name)->put(the_source,the_source->size);
 			}
 
-if(root==true && *i==netzone[the_source->source_name].size()){
-	XBT_INFO("This is the source %s",the_source->source_name.data());
-	XBT_INFO("Total free random memory size is:  %f",the_source->RAM);
-	XBT_INFO("CPUs' total power is:  %f",the_source->computing_power);
-	XBT_INFO("Total infected hosts are:%s\n",the_source->infected.data());
-	*inquiring=false;
+	if(root==true && *i==netzone[the_source->source_name].size()){
+		XBT_INFO("This is the source %s",the_source->source_name.data());
+		XBT_INFO("Total free random memory size is:  %f",the_source->RAM);
+		XBT_INFO("CPUs' total power in FLOPS is:  %f",the_source->computing_power);
+		//XBT_INFO("CPUs' total availabe speed is:  %f",the_source->available_speed);
+		XBT_INFO("Total infected hosts are:%s\n",the_source->infected.data());
+		*inquiring=false;
 
 	if(one_time_pad_work==true){
-		sg4::Host * root_host=sg4::Host::by_name("host_0");//define the source...
+		sg4::Host * root_host=sg4::Host::by_name("host_a_0_0");//define the source...
 		sg4::Actor::create("actor_0",root_host, work_distributor,work_to_do,true);
-		one_time_pad_work=false;
-	}
-
+		one_time_pad_work=false;}
 }
+
 sg4::Actor::by_pid(sg4::this_actor::get_pid())->kill();
 	}
 
@@ -765,8 +1209,11 @@ static void inquire(bool root,bool *inquiring,string inquirer)
 	if(stod(host->get_property("idleness_average"))>computing_threshold){
 		the_source->RAM=stod(host->get_property("RAM"));
 		the_source->freemem=stod(host->get_property("freemem_average"));
-		the_source->speed=host->get_speed();
-		the_source->computing_power=stod(host->get_property("idleness_average"));
+		the_source->available_speed=host->get_available_speed();
+		//the_source->computing_power=stod(host->get_property("idleness_average"))*sg4::this_actor::get_host()->get_speed();//new
+		the_source->computing_power=sg4::this_actor::get_host()->get_available_speed()*sg4::this_actor::get_host()->get_speed();//new
+
+		//the_source->computing_power=stod(host->get_property("idleness_average"));
 
 	}
 
@@ -782,7 +1229,7 @@ static void inquire(bool root,bool *inquiring,string inquirer)
 
 for(auto mail_b:mail_box){
 	mail_b->put(new std::vector<string>(message), message.size());                  // 2) send the request from the source node
-//	XBT_INFO("Request has been sent: %s.\n",mail_b->get_cname());
+	//XBT_INFO("Request has been sent: %s.\n",mail_b->get_cname());
 
 }
 
@@ -794,6 +1241,8 @@ for(auto mail_b:mail_box){ 				// 3)receive the response from leaf nodes
 sg4::Actor::by_pid(sg4::this_actor::get_pid())->kill();
 }
 
+
+
 static void host_respond(sg4::Mailbox *mail_b ,bool *inquiring)
 {
 
@@ -802,14 +1251,16 @@ static void host_respond(sg4::Mailbox *mail_b ,bool *inquiring)
 	 string request=msg->data()[1];
 	 if(request=="send_info"){
 
-	// XBT_INFO("Request has been received to: %s\n",sg4::this_actor::get_host()->get_cname());
+	 //XBT_INFO("Request has been received to: %s\n",sg4::this_actor::get_host()->get_cname());
 	 Source host={};
 	 if(netzone[sg4::this_actor::get_host()->get_cname()].empty()==true){
-
+		 host.available_speed=sg4::this_actor::get_host()->get_available_speed();
 		 host.RAM=stod(sg4::this_actor::get_host()->get_property("RAM"));
 		 host.freemem=stod(sg4::this_actor::get_host()->get_property("freemem_average"));
-		 host.computing_power=stod(sg4::this_actor::get_host()->get_property("idleness_average"));
-		 host.speed=sg4::this_actor::get_host()->get_speed();
+		//host.computing_power=stod(sg4::this_actor::get_host()->get_property("idleness_average"))*sg4::this_actor::get_host()->get_speed();
+		host.computing_power=sg4::this_actor::get_host()->get_available_speed()*sg4::this_actor::get_host()->get_speed();
+
+		// host.computing_power=stod(sg4::this_actor::get_host()->get_property("idleness_average"));
 		 host.source_name=sg4::this_actor::get_host()->get_cname();
 		 host.size=1024;
 		 mail_b->put(new Source(host), host.size);//send from leaf node;
