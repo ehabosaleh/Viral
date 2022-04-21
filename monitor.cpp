@@ -14,12 +14,10 @@ void monitor(simgrid::s4u::Host *host,bool *busy){
 		while(true){
 			if (host->get_available_speed()<=computing_threshold) {counter++;}
 			else {counter=0;*busy=false;}
-			simgrid::s4u::this_actor::sleep_for(300);
+			simgrid::s4u::this_actor::sleep_for(60);
 			simgrid::s4u::this_actor::get_host()->set_property("idleness_average", to_string(host->get_available_speed()));
-			if(counter==1){*busy=true;counter=0;}// it will reach this point after 300 secs
+			if(counter==5){*busy=true;counter=0;}// it will reach this point after 300 secs
 
 		}
 		}
-
-
 
